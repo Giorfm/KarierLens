@@ -26,26 +26,26 @@
   body {
     background: white !important;
     color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  body * {
-    visibility: hidden;
-  }
-  #print-area,
-  #print-area * {
-    visibility: visible;
+  .no-print {
+    display: none !important;
   }
   #print-area {
-    position: absolute;
-    inset: 0;
-    width: 100%;
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
     box-shadow: none !important;
-    border: 0 !important;
+    border: none !important;
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
   }
-  .no-print {
-    display: none !important;
+  #print-area,
+  #print-area * {
+    visibility: visible !important;
   }
   @page {
     margin: 15mm;

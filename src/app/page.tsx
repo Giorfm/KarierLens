@@ -307,7 +307,7 @@ export default function Home() {
   const hasResults = Boolean(result.score || result.rewrite || result.interview);
 
   return (
-    <div className="min-h-screen bg-[#F4F1EA] text-[#1D1D1B] flex flex-col font-sans selection:bg-[#EFE84A] selection:text-[#1D1D1B]">
+    <div className="min-h-screen bg-[#F4F1EA] text-[#1D1D1B] flex flex-col font-sans selection:bg-[#EFE84A] selection:text-[#1D1D1B] print:min-h-0 print:bg-white print:text-black">
       {/* Header */}
       <Header
         onSelectPreset={handleSelectPreset}
@@ -316,7 +316,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1 w-full">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1 w-full print:p-0 print:m-0 print:max-w-none print:w-full print:space-y-0">
         {/* Status Banner */}
         <StatusBanner
           isSimulation={mode === "simulation"}
@@ -347,9 +347,9 @@ export default function Home() {
         />
 
         {/* Workspace Result Tabs Section */}
-        <div ref={resultsRef} className="no-print pt-4 space-y-4">
+        <div ref={resultsRef} className="pt-4 space-y-4 print:p-0 print:m-0 print:space-y-0">
           {/* Folder-tab style navigation bar with hard offset shadow */}
-          <div className="border-b-4 border-[#1D1D1B] flex flex-wrap gap-2">
+          <div className="no-print border-b-4 border-[#1D1D1B] flex flex-wrap gap-2">
             {/* Tab 01: Score */}
             <button
               type="button"
@@ -423,7 +423,7 @@ export default function Home() {
           </div>
 
         {/* Panel Konten Tab */}
-        <div className="mt-4">
+        <div className="mt-4 print:m-0 print:p-0">
           {activeTab === "score" && (
             <AtsScoreTab
               scoreData={result.score}

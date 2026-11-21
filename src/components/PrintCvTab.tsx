@@ -201,16 +201,21 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   if (contacts.links.length > 0) contactItems.push(contacts.links.slice(0, 2).join(" | "));
 
   return (
-    <div className="space-y-6">
-      {/* Banner Non-Cetak Mode Inggris (Spesifikasi 3.6) */}
+    <div className="space-y-6 print:space-y-0">
+      {/* Banner Non-Cetak Mode Inggris: Neo-Brutalist */}
       {isEn && (
-        <div className="no-print bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-start gap-3 text-xs text-indigo-900">
-          <Info className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-bold uppercase tracking-wider text-indigo-950">
-              Dokumen CV Bahasa Inggris
+        <div className="no-print bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex items-start gap-3.5 text-[#1D1D1B]">
+          <span className="p-1.5 bg-[#1D1D1B] text-[#EFE84A] border border-[#1D1D1B] shrink-0 mt-0.5 shadow-[1px_1px_0px_#1D1D1B]">
+            <Info className="h-4 w-4" />
+          </span>
+          <div className="space-y-1">
+            <h4 className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B] flex items-center gap-2">
+              DOKUMEN CV BAHASA INGGRIS //
+              <span className="bg-[#1E40AF] text-[#F4F1EA] text-[10px] font-bold px-2 py-0.5 border border-[#1D1D1B]">
+                AI + GLOSARIUM
+              </span>
             </h4>
-            <p className="mt-0.5 leading-relaxed">
+            <p className="font-sans text-xs text-[#1D1D1B] font-medium leading-relaxed">
               Terjemahan dibantu AI dan glosarium. Periksa kembali, dan pastikan kamu bisa menjelaskan setiap kalimat dalam bahasa Inggris saat wawancara.
             </p>
           </div>
@@ -219,16 +224,18 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
       {/* Peringatan Penjaga Kenaikan Jabatan jika terdeteksi (3.5.1) */}
       {unjustifiedTitles.length > 0 && (
-        <div className="no-print bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 text-xs text-amber-900">
-          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
-          <span>
-            <strong>Peringatan Kenaikan Jabatan:</strong> Kata <strong>&quot;{unjustifiedTitles.join(", ")}&quot;</strong> tidak ada di CV aslimu. Periksa agar tidak terkesan menaikkan jabatan.
+        <div className="no-print bg-[#F4F1EA] border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex items-center gap-3 text-xs text-[#1D1D1B]">
+          <span className="p-1.5 bg-[#1D1D1B] text-[#F34E34] border border-[#1D1D1B] shrink-0 shadow-[1px_1px_0px_#1D1D1B]">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <span className="font-mono text-xs font-bold leading-relaxed">
+            PERINGATAN KENAIKAN JABATAN // Kata <strong>&quot;{unjustifiedTitles.join(", ")}&quot;</strong> tidak ada di CV aslimu. Periksa kembali agar tidak terkesan menggelembungkan jabatan.
           </span>
         </div>
       )}
 
-      {/* Action & Warning Bar */}
-      <div className="no-print bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Action & Warning Bar: Neo-Brutalist */}
+      <div className="no-print bg-white p-4 sm:p-5 border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span
             className={`p-2 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] ${
@@ -238,21 +245,21 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
             }`}
           >
             {unfilledCount === 0 && totalPlaceholders > 0 ? (
-              <CheckCircle2 className="h-5 w-5" />
+              <CheckCircle2 className="h-5 w-5 stroke-[2.5]" />
             ) : (
-              <AlertTriangle className="h-5 w-5" />
+              <AlertTriangle className="h-5 w-5 stroke-[2.5]" />
             )}
           </span>
           <div>
-            <h4 className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
+            <h4 className="font-mono text-xs sm:text-sm font-black uppercase tracking-wider text-[#1D1D1B]">
               {unfilledCount === 0 && totalPlaceholders > 0
-                ? "SIAP DICETAK"
-                : "PERIKSA PLACEHOLDER //"}
+                ? "SIAP DICETAK // DOKUMEN LENGKAP"
+                : "STATUS PLACEHOLDER //"}
             </h4>
-            <p className="font-sans text-xs text-[#1D1D1B]/80 mt-0.5 leading-relaxed">
+            <p className="font-sans text-xs text-[#1D1D1B]/80 mt-0.5 leading-relaxed font-medium">
               {unfilledCount > 0 ? (
                 <>
-                  Tersisa <strong className="font-mono font-bold text-[#F34E34]">{unfilledCount} placeholder</strong> kosong.
+                  Tersisa <strong className="font-mono font-bold text-[#F34E34] underline decoration-2">{unfilledCount} placeholder</strong> yang belum diisi data nyata.
                 </>
               ) : (
                 "Semua data lengkap dan siap dicetak."
@@ -276,7 +283,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
       <div
         id="print-area"
         lang={language || "id"}
-        className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0"
+        className="bg-white border-2 border-[#1D1D1B] shadow-[6px_6px_0px_#1D1D1B] p-8 sm:p-12 font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0 print:m-0 print:max-w-none print:w-full print:space-y-4"
       >
         {/* Header Nama & Kontak */}
         <div className="text-center border-b border-slate-300 pb-5 space-y-1.5 print:border-black">
