@@ -41,17 +41,24 @@ export function computeScores(
 
   // 2. Evaluasi kata kunci awal di CV
   const matchedKeywords: string[] = [];
-  const missingKeywords: { keyword: string; importance: 1 | 2 | 3 }[] = [];
+  const missingKeywords: { keyword: string; keywordAlt?: string; importance: 1 | 2 | 3 }[] = [];
 
   for (const item of keywords) {
     const kwNorm = normalizeText(item.keyword);
+    const altNorm = item.keywordAlt ? normalizeText(item.keywordAlt) : "";
     const isPresent =
-      item.foundInCv === true || (kwNorm.length > 0 && normalizedCv.includes(kwNorm));
+      item.foundInCv === true ||
+      (kwNorm.length > 0 && normalizedCv.includes(kwNorm)) ||
+      (altNorm.length > 0 && normalizedCv.includes(altNorm));
 
     if (isPresent) {
       matchedKeywords.push(item.keyword);
     } else {
-      missingKeywords.push({ keyword: item.keyword, importance: item.importance });
+      missingKeywords.push({
+        keyword: item.keyword,
+        keywordAlt: item.keywordAlt,
+        importance: item.importance,
+      });
     }
   }
 
@@ -101,26 +108,28 @@ export function computeScores(
 
     for (const item of missingKeywords) {
       const kwNorm = normalizeText(item.keyword);
-      if (!kwNorm) continue;
+      const altNorm = item.keywordAlt ? normalizeText(item.keywordAlt) : "";
+      if (!kwNorm && !altNorm) continue;
 
-      // a. Cocok exact/substring di teks revisi atau array keywordsAdded
-      const inText = allRewriteText.includes(kwNorm);
-      const inAdded = normalizedAddedKeywords.some(
-        (ak) =>
-          ak === kwNorm ||
-          (ak.length > 3 && (ak.includes(kwNorm) || kwNorm.includes(ak)))
-      );
+      const checkMatch = (termNorm: string) => {
+        if (!termNorm) return false;
+        const inText = allRewriteText.includes(termNorm);
+        const inAdded = normalizedAddedKeywords.some(
+          (ak) =>
+            ak === termNorm ||
+            (ak.length > 3 && (ak.includes(termNorm) || termNorm.includes(ak)))
+        );
+        const words = termNorm.split(" ").filter((w) => w.length >= 3);
+        const wordsMatch =
+          words.length >= 2 &&
+          words.every((w) => {
+            const root = w.slice(0, Math.min(w.length, 6));
+            return allRewriteText.includes(root);
+          });
+        return inText || inAdded || wordsMatch;
+      };
 
-      // b. Multi-word stem matching (misal: "bug identification" -> "bug" & "identif" di teks)
-      const words = kwNorm.split(" ").filter((w) => w.length >= 3);
-      const wordsMatch =
-        words.length >= 2 &&
-        words.every((w) => {
-          const root = w.slice(0, Math.min(w.length, 6));
-          return allRewriteText.includes(root);
-        });
-
-      if (inText || inAdded || wordsMatch) {
+      if (checkMatch(kwNorm) || (altNorm && checkMatch(altNorm))) {
         newlyCovered.push(item.keyword);
       }
     }

@@ -31,6 +31,7 @@ export const scoreResultSchema: z.ZodType<ScoreResult> = z
       .array(
         z.object({
           keyword: safeString(),
+          keywordAlt: safeString().optional(),
           importance: safeImportance,
           foundInCv: z
             .unknown()
@@ -82,6 +83,7 @@ export const rewriteResultSchema: z.ZodType<RewriteResult> = z
           before: safeString(""),
           after: safeString(""),
           improvementReason: safeString(""),
+          translationNote: safeString().optional(),
           keywordsAdded: z
             .array(safeString())
             .default([])
