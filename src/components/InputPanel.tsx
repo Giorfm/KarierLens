@@ -11,6 +11,7 @@ import {
   ArrowRight,
   AlertTriangle,
   Globe,
+  Check,
 } from "lucide-react";
 import type { Lang } from "@/types/karierlens";
 import { maskPii } from "@/lib/pii";
@@ -80,30 +81,42 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   };
 
   return (
-    <div className="no-print bg-white rounded-2xl border border-slate-200 shadow-xs p-5 md:p-6 space-y-6">
-      {/* Pilihan Bahasa Hasil CV: Segmented Control Dua Kartu (Spesifikasi 3.2) */}
-      <div className="space-y-3">
-        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-          Pilihan Format Dokumen Hasil CV
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="no-print space-y-6">
+      {/* Pilihan Bahasa Hasil CV: Segmented Control Neo-Brutalist */}
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 sm:p-5 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#1D1D1B] pb-2.5">
+          <span className="font-mono text-xs sm:text-sm font-black text-[#1D1D1B] uppercase tracking-wider flex items-center gap-2">
+            <Globe className="h-4 w-4 text-[#1E40AF]" />
+            PILIHAN FORMAT DOKUMEN HASIL CV
+          </span>
+          <span className="font-mono text-[11px] text-[#1D1D1B]/70 font-bold uppercase">
+            PILIH TARGET BAHASA KELUARAN
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           {/* Kartu 1: CV Bahasa Indonesia */}
           <button
             type="button"
             onClick={() => setLanguage("id")}
-            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative ${
+            className={`p-3.5 sm:p-4 border-2 border-[#1D1D1B] text-left transition-all cursor-pointer relative ${
               language === "id"
-                ? "bg-indigo-50/70 border-indigo-500 ring-2 ring-indigo-200 shadow-xs"
-                : "bg-slate-50/60 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+                ? "bg-[#EFE84A] shadow-[3px_3px_0px_#1D1D1B] translate-x-[-1px] translate-y-[-1px]"
+                : "bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B] hover:bg-white active:shadow-none"
             }`}
           >
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-slate-900">CV Bahasa Indonesia</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-mono text-xs sm:text-sm font-black uppercase text-[#1D1D1B] flex items-center gap-1.5">
+                {language === "id" && <Check className="h-4 w-4 stroke-[3] text-[#1D1D1B]" />}
+                CV BAHASA INDONESIA
+              </span>
               {language === "id" && (
-                <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                <span className="bg-[#1D1D1B] text-[#EFE84A] font-mono text-[10px] font-black px-2 py-0.5 uppercase border border-[#1D1D1B]">
+                  AKTIF
+                </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="font-sans text-xs text-[#1D1D1B]/80 mt-2 font-medium leading-relaxed">
               Hasil CV, poin revisi, dan simulasi wawancara dalam Bahasa Indonesia profesional.
             </p>
           </button>
@@ -112,64 +125,69 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           <button
             type="button"
             onClick={() => setLanguage("en")}
-            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative ${
+            className={`p-3.5 sm:p-4 border-2 border-[#1D1D1B] text-left transition-all cursor-pointer relative ${
               language === "en"
-                ? "bg-indigo-50/70 border-indigo-500 ring-2 ring-indigo-200 shadow-xs"
-                : "bg-slate-50/60 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+                ? "bg-[#EFE84A] shadow-[3px_3px_0px_#1D1D1B] translate-x-[-1px] translate-y-[-1px]"
+                : "bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B] hover:bg-white active:shadow-none"
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-slate-900">CV Bahasa Inggris</span>
-                <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300 shadow-2xs">
-                  Khas KarierLens
+                {language === "en" && <Check className="h-4 w-4 stroke-[3] text-[#1D1D1B]" />}
+                <span className="font-mono text-xs sm:text-sm font-black uppercase text-[#1D1D1B]">
+                  CV BAHASA INGGRIS
+                </span>
+                <span className="bg-[#1E40AF] text-[#F4F1EA] font-mono text-[10px] font-bold px-2 py-0.5 border border-[#1D1D1B] uppercase shadow-[1px_1px_0px_#1D1D1B]">
+                  KHAS KARIERLENS
                 </span>
               </div>
               {language === "en" && (
-                <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                <span className="bg-[#1D1D1B] text-[#EFE84A] font-mono text-[10px] font-black px-2 py-0.5 uppercase border border-[#1D1D1B]">
+                  AKTIF
+                </span>
               )}
             </div>
-            <p className="text-xs text-slate-600 mt-1">
-              <em>Tulis dalam Bahasa Indonesia, hasil dalam Bahasa Inggris</em> — dibantu glosarium kampus tanpa menaikkan jabatan.
+            <p className="font-sans text-xs text-[#1D1D1B]/80 mt-2 font-medium leading-relaxed">
+              <strong>Tulis dalam Bahasa Indonesia, hasil dalam Bahasa Inggris</strong> — dibantu glosarium kampus tanpa menaikkan jabatan.
             </p>
           </button>
         </div>
 
         {/* Saran Otomatis Berdasarkan Deteksi Bahasa JD */}
         {jdDetectedLang === "en" && language === "id" && (
-          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-indigo-900">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-indigo-600 shrink-0" />
+          <div className="bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#1D1D1B]">
+            <div className="flex items-center gap-2 font-mono font-bold">
+              <Sparkles className="h-4 w-4 text-[#1D1D1B] shrink-0" />
               <span>
-                <strong>Saran:</strong> JD terdeteksi berbahasa Inggris. Mau hasil CV dalam Bahasa Inggris?
+                SARAN // Target lowongan (JD) terdeteksi berbahasa Inggris. Mau hasilkan CV dalam Bahasa Inggris?
               </span>
             </div>
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-2xs transition cursor-pointer shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#1E40AF] hover:bg-[#1D1D1B] text-[#F4F1EA] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] active:shadow-none transition cursor-pointer shrink-0"
             >
-              <span>Pakai mode Inggris</span>
+              <span>PAKAI MODE INGGRIS</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
         )}
 
         {language === "en" && jdDetectedLang === "id" && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-900">
-            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="bg-[#F4F1EA] border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] p-3 flex items-start gap-2.5 font-mono text-xs text-[#1D1D1B]">
+            <AlertTriangle className="h-4 w-4 text-[#F34E34] shrink-0 mt-0.5" />
             <p>
-              <strong>Catatan:</strong> JD berbahasa Indonesia, sedangkan CV hasil berbahasa Inggris. Pencocokan kata kunci tetap berjalan dua arah, tetapi pastikan perusahaan target memang menerima CV Inggris.
+              <strong>CATATAN:</strong> JD berbahasa Indonesia, sedangkan CV hasil berbahasa Inggris. Pencocokan kata kunci tetap berjalan dua arah.
             </p>
           </div>
         )}
 
         {/* Kartu Tips Statis untuk Mode Inggris */}
         {language === "en" && (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-start gap-2.5 text-xs text-slate-600">
-            <Info className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+          <div className="bg-[#F4F1EA] border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] p-3 flex items-start gap-2.5 font-mono text-xs text-[#1D1D1B]">
+            <Info className="h-4 w-4 text-[#1E40AF] shrink-0 mt-0.5" />
             <p>
-              <strong>Tips CV Global:</strong> CV untuk perusahaan multinasional / regional umumnya tidak mencantumkan foto, agama, status pernikahan, atau tanggal lahir. Periksa persyaratan tiap lowongan.
+              <strong>TIPS CV GLOBAL:</strong> CV standar internasional umumnya tidak mencantumkan foto, agama, status pernikahan, atau tanggal lahir.
             </p>
           </div>
         )}
