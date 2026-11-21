@@ -4,14 +4,12 @@ import React, { useState, useMemo } from "react";
 import {
   Sparkles,
   ArrowRight,
-  ArrowDown,
   Copy,
   Check,
   RotateCcw,
   Tag,
   AlertTriangle,
   CheckCircle2,
-  Edit3,
   BookOpen,
 } from "lucide-react";
 import type { RewriteResult, Lang } from "@/types/karierlens";
@@ -277,14 +275,8 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
         </div>
       )}
 
-      {/* Banner Rekap & Interaktif Placeholder */}
-      <div
-        className={`border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
-          totalUnfilled === 0 && totalPlaceholders > 0
-            ? "bg-emerald-50/90 border-emerald-200"
-            : "bg-amber-50/90 border-amber-200"
-        }`}
-      >
+      {/* 1. Top Counter Banner */}
+      <div className="bg-[#EFE84A] text-[#1D1D1B] border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="p-1.5 bg-[#1D1D1B] text-[#EFE84A] border border-[#1D1D1B]">
             {unfilledPlaceholders > 0 ? (
@@ -300,15 +292,11 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
             <p className="font-mono text-xs sm:text-sm font-bold">
               {unfilledPlaceholders > 0 ? (
                 <>
-                  <span className="underline decoration-2">{unfilledPlaceholders} DARI {totalPlaceholders}</span> PERLU DATA NYATA
+                  <span className="underline decoration-2">{unfilledPlaceholders} DARI {totalPlaceholders}</span> PERLU DATA NYATA: Ketik langsung angka/data riil pada kotak kuning di bawah, dan nilainya otomatis berubah di CV Cetak!
                 </>
               ) : (
                 <>
-                  Tersisa{" "}
-                  <strong className="underline decoration-amber-400 underline-offset-2">
-                    {totalUnfilled} placeholder {language === "en" ? "[fill in ...]" : "[isi ...]"}
-                  </strong>
-                  . Kamu dapat <strong>mengetik langsung angka/data riil</strong> pada kotak kuning di bawah, dan nilainya otomatis berubah di CV Cetak!
+                  SEMUA PLACEHOLDER TELAH TERISI ({totalPlaceholders})
                 </>
               )}
             </p>
@@ -411,34 +399,9 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                     </div>
 
                     <div className="text-xs sm:text-sm text-slate-900 font-medium leading-relaxed">
-                      {parts.map((p, pIdx) => {
-                        if (p.isPlaceholder) {
-                          const specificKey = `${item.id}_${p.placeholderIndex ?? 0}`;
-                          const currentVal =
-                            placeholderValues[specificKey] ??
-                            placeholderValues[p.text] ??
-                            "";
-                          const isFilled = currentVal.trim().length > 0;
-                          const hintText = p.hint || (language === "en" ? "fill number" : "isi angka");
-
-              {/* Footer Info */}
-              <div className="space-y-2 pt-2 border-t-2 border-[#1D1D1B]">
-                {item.keywordsAdded && item.keywordsAdded.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold uppercase text-[#1D1D1B] flex items-center gap-1">
-                      <Tag className="h-3.5 w-3.5 text-[#1D1D1B]" />
-                      KATA KUNCI:
-                    </span>
-                    {item.keywordsAdded.map((kw, kwIdx) => (
-                      <span
-                        key={kwIdx}
-                        className="bg-[#2ED47A] text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2.5 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]"
-                      >
-                        {kw}
-                      </span>
-                    ))}
+                      {renderInteractiveText(item.after, item.id)}
+                    </div>
                   </div>
-                )}
 
                   {/* Kata Kunci yang Ditambahkan, Alasan, dan Catatan Terjemahan */}
                   <div className="pt-2 border-t border-indigo-100/70 space-y-1.5">
@@ -468,7 +431,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                       </p>
                     )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           );

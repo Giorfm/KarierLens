@@ -477,6 +477,7 @@ export default function Home() {
             />
           )}
         </div>
+      </div>
 
         {/* Development Copy JSON Helper */}
         {hasResults && (

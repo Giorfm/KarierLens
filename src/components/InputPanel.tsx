@@ -10,6 +10,7 @@ import {
   Info,
   ArrowRight,
   AlertTriangle,
+  Globe,
 } from "lucide-react";
 import type { Lang } from "@/types/karierlens";
 import { maskPii } from "@/lib/pii";

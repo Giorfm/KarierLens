@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Printer, AlertTriangle, FileText, CheckCircle2, Info } from "lucide-react";
+import { Printer, AlertTriangle, CheckCircle2, Info, RotateCcw } from "lucide-react";
 import type { CleanCvSection, Lang } from "@/types/karierlens";
 import {
   countPlaceholders,
@@ -149,7 +149,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   const renderWithPlaceholders = (text?: string | null, contextId?: string) => {
     if (!text) return null;
     const parts = splitPlaceholders(text);
-    let phIdx = 0;
+    const phIdx = 0;
 
     return parts.map((p, idx) => {
       if (p.isPlaceholder) {
@@ -345,10 +345,18 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
                   <div className="text-xs font-semibold text-slate-700 print:text-black">
                     {renderWithPlaceholders(exp.organization, `exp_${expIdx}_org`)}
                   </div>
-                ))}
-              </div>
+                  <ul className="list-disc list-outside pl-4 space-y-1 pt-1 text-xs sm:text-sm text-slate-800 print:text-black">
+                    {(exp.bullets || []).map((bullet, bIdx) => (
+                      <li key={bIdx} className="leading-relaxed">
+                        {renderWithPlaceholders(bullet, `exp_${expIdx}_b_${bIdx}`)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
         {/* Keahlian & Keterampilan / Skills */}
         {cleanCv.skills && cleanCv.skills.length > 0 && (
