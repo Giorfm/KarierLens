@@ -7,19 +7,20 @@
  */
 
 const apiKey =
-  process.env.GEMINI_API_KEY?.trim() ||
-  process.env.DEEPSEEK_API_KEY?.trim();
+  process.env.DEEPSEEK_API_KEY?.trim() ||
+  process.env.TOKEN_GATEWAY_API_KEY?.trim() ||
+  process.env.GEMINI_API_KEY?.trim();
 
 const isGoogleKey = apiKey?.startsWith("AIza");
 
 const configuredModel =
-  process.env.GEMINI_MODEL?.trim() ||
   process.env.DEEPSEEK_MODEL?.trim() ||
+  process.env.GEMINI_MODEL?.trim() ||
   (isGoogleKey ? "gemini-2.5-flash" : "deepseek-flash");
 
 let rawBaseUrl =
-  process.env.GEMINI_BASE_URL?.trim() ||
   process.env.DEEPSEEK_BASE_URL?.trim() ||
+  process.env.GEMINI_BASE_URL?.trim() ||
   (isGoogleKey
     ? "https://generativelanguage.googleapis.com/v1beta/openai"
     : "https://tokengateway.dev/v1");
@@ -40,11 +41,12 @@ if (!isGemini) {
   console.log(`Disable Thinking  : ${disableThinking}`);
 }
 
-if (!apiKey || apiKey === "isi_api_key_anda_di_sini" || apiKey === "isi_api_key_gemini_di_sini" || apiKey.trim() === "") {
+if (!apiKey || apiKey === "isi_api_key_anda_di_sini" || apiKey === "isi_api_key_tokengateway_di_sini" || apiKey === "isi_api_key_gemini_di_sini" || apiKey.trim() === "") {
   console.error("\n❌ ERROR: API key belum diisi di .env.local.");
   console.error("   Tambahkan baris berikut di .env.local Anda:");
-  console.error("   GEMINI_API_KEY=kunci_api_anda");
-  console.error("   GEMINI_MODEL=gemini-2.5-flash");
+  console.error("   DEEPSEEK_API_KEY=kunci_api_tokengateway_anda");
+  console.error("   DEEPSEEK_BASE_URL=https://tokengateway.dev/v1");
+  console.error("   DEEPSEEK_MODEL=deepseek-flash");
   process.exit(1);
 }
 

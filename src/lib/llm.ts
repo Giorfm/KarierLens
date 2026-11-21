@@ -246,28 +246,35 @@ async function fetchWithDegradation(
  */
 export async function callLLM(options: LlmCallOptions): Promise<LlmCallResult> {
   const apiKey =
-    process.env.GEMINI_API_KEY?.trim() ||
-    process.env.DEEPSEEK_API_KEY?.trim();
+    process.env.DEEPSEEK_API_KEY?.trim() ||
+    process.env.TOKEN_GATEWAY_API_KEY?.trim() ||
+    process.env.OPENAI_API_KEY?.trim() ||
+    process.env.GEMINI_API_KEY?.trim();
 
-  if (!apiKey || apiKey === "isi_api_key_anda_di_sini" || apiKey === "isi_api_key_gemini_di_sini") {
+  if (
+    !apiKey ||
+    apiKey === "isi_api_key_anda_di_sini" ||
+    apiKey === "isi_api_key_tokengateway_di_sini" ||
+    apiKey === "isi_api_key_gemini_di_sini"
+  ) {
     throw new LlmError(
       "NO_API_KEY",
-      "API key belum diisi. Isi GEMINI_API_KEY di .env.local atau gunakan hasil simulasi."
+      "API key belum diisi. Isi DEEPSEEK_API_KEY di .env.local atau gunakan hasil simulasi."
     );
   }
 
   const isGoogleKey = apiKey.startsWith("AIza");
 
-  // Determine model: prioritize GEMINI_MODEL, then DEEPSEEK_MODEL
+  // Determine model: prioritize DEEPSEEK_MODEL
   const configuredModel =
-    process.env.GEMINI_MODEL?.trim() ||
     process.env.DEEPSEEK_MODEL?.trim() ||
+    process.env.GEMINI_MODEL?.trim() ||
     (isGoogleKey ? "gemini-2.5-flash" : "deepseek-flash");
 
-  // Determine baseUrl: prioritize GEMINI_BASE_URL, then DEEPSEEK_BASE_URL
+  // Determine baseUrl: prioritize DEEPSEEK_BASE_URL
   let rawBaseUrl =
-    process.env.GEMINI_BASE_URL?.trim() ||
     process.env.DEEPSEEK_BASE_URL?.trim() ||
+    process.env.GEMINI_BASE_URL?.trim() ||
     (isGoogleKey
       ? "https://generativelanguage.googleapis.com/v1beta/openai"
       : "https://tokengateway.dev/v1");
