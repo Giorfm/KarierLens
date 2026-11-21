@@ -267,6 +267,29 @@ export const AtsScoreTab: React.FC<AtsScoreTabProps> = ({
               </span>
             )}
           </div>
+          {matched.length === 0 ? (
+            <p className="text-xs text-slate-400 italic">Belum ada kata kunci utama JD yang cocok di CV awal.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {matched.map((kw) => {
+                const item = scoreData.jdKeywords.find((k) => k.keyword.toLowerCase() === kw.toLowerCase());
+                return (
+                  <span
+                    key={kw}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
+                  >
+                    <span>{kw}</span>
+                    {item?.keywordAlt && item.keywordAlt.toLowerCase() !== kw.toLowerCase() && (
+                      <span className="text-[10px] text-emerald-600 font-normal opacity-80">
+                        ({item.keywordAlt})
+                      </span>
+                    )}
+                    {item && importanceBadge(item.importance)}
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Section: Belum Ada di CV */}
@@ -278,22 +301,34 @@ export const AtsScoreTab: React.FC<AtsScoreTabProps> = ({
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-2.5">
-            {missing.map((kw, idx) => {
-              const imp = keywordMap.get(kw.toLowerCase().trim()) || 2;
-              let impLabel = "PENTING";
-              if (imp === 3) impLabel = "WAJIB";
-              if (imp === 1) impLabel = "TAMBAHAN";
-
-              return (
-                <span
-                  key={`missing-${idx}`}
-                  className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] font-mono text-xs font-bold px-3 py-1.5 rounded-full shadow-[2px_2px_0px_#1D1D1B] inline-flex items-center gap-2"
-                >
-                  <X className="h-3.5 w-3.5 stroke-[3]" />
-                  <span>{kw}</span>
-                  <span className="bg-[#1D1D1B] text-[#EFE84A] text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full uppercase">
-                    [{impLabel}]
+          {missing.length === 0 ? (
+            <p className="text-xs text-emerald-600 font-medium">Luar biasa! Seluruh kata kunci utama JD sudah tercakup di CV kamu.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {missing.map((kw) => {
+                const item = scoreData.jdKeywords.find((k) => k.keyword.toLowerCase() === kw.toLowerCase());
+                const isCovered = newlyCovered.includes(kw);
+                return (
+                  <span
+                    key={kw}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                      isCovered
+                        ? "bg-indigo-50 text-indigo-900 border-indigo-200"
+                        : "bg-slate-50 text-slate-800 border-slate-200"
+                    }`}
+                  >
+                    <span>{kw}</span>
+                    {item?.keywordAlt && item.keywordAlt.toLowerCase() !== kw.toLowerCase() && (
+                      <span className="text-[10px] text-slate-500 font-normal">
+                        ({item.keywordAlt})
+                      </span>
+                    )}
+                    {item && importanceBadge(item.importance)}
+                    {isCovered && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        Tertutup Revisi ✓
+                      </span>
+                    )}
                   </span>
                 </span>
               );

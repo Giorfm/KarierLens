@@ -7,7 +7,8 @@ import type {
   InterviewResult,
 } from "@/types/karierlens";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { buildSystemPrompt, buildTaskPrompt } from "@/lib/prompts";
+import { buildSystemPrompt, buildTaskPrompt, buildGlossaryBlock } from "@/lib/prompts";
+import { detectGlossary } from "@/lib/glossary";
 import { callLLM, LlmError } from "@/lib/llm";
 import {
   scoreResultSchema,
@@ -112,28 +113,38 @@ export async function POST(req: NextRequest) {
 
     // 4. API Key Verification
     const apiKey =
-      process.env.GEMINI_API_KEY?.trim() ||
-      process.env.DEEPSEEK_API_KEY?.trim();
+      process.env.DEEPSEEK_API_KEY?.trim() ||
+      process.env.TOKEN_GATEWAY_API_KEY?.trim() ||
+      process.env.OPENAI_API_KEY?.trim() ||
+      process.env.GEMINI_API_KEY?.trim();
 
     if (
       !apiKey ||
       apiKey === "" ||
       apiKey === "isi_api_key_anda_di_sini" ||
+      apiKey === "isi_api_key_tokengateway_di_sini" ||
       apiKey === "isi_api_key_gemini_di_sini"
     ) {
       return NextResponse.json<AnalyzeResponse<never>>(
         {
           ok: false,
           code: "NO_API_KEY",
-          message: "API key belum diisi. Isi GEMINI_API_KEY di .env.local atau gunakan hasil simulasi.",
+          message: "API key belum diisi. Isi DEEPSEEK_API_KEY di .env.local atau gunakan hasil simulasi.",
         },
         { status: 503 }
       );
     }
 
-    // 5. Construct prompts
+    // 5. Construct prompts with Glossary Injection
     const systemPrompt = buildSystemPrompt(language);
-    const userPrompt = `${buildTaskPrompt(task)}\n\n<cv>\n${cvText}\n</cv>\n\n<jd>\n${jobDescription}\n</jd>`;
+    const glossaryHits = detectGlossary(cvText);
+    const glossaryBlock = buildGlossaryBlock(glossaryHits, language);
+
+    let userPrompt = `${buildTaskPrompt(task)}\n\n`;
+    if (glossaryBlock) {
+      userPrompt += `${glossaryBlock}\n\n`;
+    }
+    userPrompt += `<cv>\n${cvText}\n</cv>\n\n<jd>\n${jobDescription}\n</jd>`;
 
     const maxTokensMap = {
       score: 900,

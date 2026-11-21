@@ -4,15 +4,22 @@ import type {
   ComputedScores,
   ReadinessStatus,
 } from "@/types/karierlens";
+import { resolveTextPlaceholders } from "@/lib/placeholders";
 
 export function normalizeText(s: string): string {
-  return s.toLowerCase().replace(/\s+/g, " ").trim();
+  return s
+    .toLowerCase()
+    .replace(/[/\\_-]+/g, " ")
+    .replace(/[^\w\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function computeScores(
   score: ScoreResult,
   cvText: string,
-  rewrite?: RewriteResult
+  rewrite?: RewriteResult,
+  placeholderValues?: Record<string, string>
 ): ComputedScores {
   const keywords = score?.jdKeywords ?? [];
 
@@ -34,17 +41,24 @@ export function computeScores(
 
   // 2. Evaluasi kata kunci awal di CV
   const matchedKeywords: string[] = [];
-  const missingKeywords: { keyword: string; importance: 1 | 2 | 3 }[] = [];
+  const missingKeywords: { keyword: string; keywordAlt?: string; importance: 1 | 2 | 3 }[] = [];
 
   for (const item of keywords) {
     const kwNorm = normalizeText(item.keyword);
+    const altNorm = item.keywordAlt ? normalizeText(item.keywordAlt) : "";
     const isPresent =
-      item.foundInCv === true || (kwNorm.length > 0 && normalizedCv.includes(kwNorm));
+      item.foundInCv === true ||
+      (kwNorm.length > 0 && normalizedCv.includes(kwNorm)) ||
+      (altNorm.length > 0 && normalizedCv.includes(altNorm));
 
     if (isPresent) {
       matchedKeywords.push(item.keyword);
     } else {
-      missingKeywords.push({ keyword: item.keyword, importance: item.importance });
+      missingKeywords.push({
+        keyword: item.keyword,
+        keywordAlt: item.keywordAlt,
+        importance: item.importance,
+      });
     }
   }
 
@@ -72,19 +86,50 @@ export function computeScores(
   const newlyCovered: string[] = [];
 
   if (rewrite) {
-    const afterTexts = (rewrite.rewrites || []).map((r) => r.after || "");
+    const afterTexts = (rewrite.rewrites || []).map((r) =>
+      resolveTextPlaceholders(r.after || "", placeholderValues, r.id)
+    );
+    const addedKeywords = (rewrite.rewrites || []).flatMap((r) => r.keywordsAdded || []);
     const cleanCvTexts: string[] = [
-      rewrite.cleanCv?.headline || "",
-      rewrite.cleanCv?.summary || "",
-      ...(rewrite.cleanCv?.skills || []),
-      ...(rewrite.cleanCv?.experiences || []).flatMap((exp) => exp.bullets || []),
+      resolveTextPlaceholders(rewrite.cleanCv?.headline || "", placeholderValues, "headline"),
+      resolveTextPlaceholders(rewrite.cleanCv?.summary || "", placeholderValues, "summary"),
+      ...(rewrite.cleanCv?.skills || []).map((sk) =>
+        resolveTextPlaceholders(sk, placeholderValues)
+      ),
+      ...(rewrite.cleanCv?.experiences || []).flatMap((exp) =>
+        (exp.bullets || []).map((b) => resolveTextPlaceholders(b, placeholderValues))
+      ),
     ];
 
-    const allRewriteText = normalizeText([...afterTexts, ...cleanCvTexts].join(" "));
+    const allRewriteText = normalizeText(
+      [...afterTexts, ...addedKeywords, ...cleanCvTexts].join(" ")
+    );
+    const normalizedAddedKeywords = addedKeywords.map((k) => normalizeText(k));
 
     for (const item of missingKeywords) {
       const kwNorm = normalizeText(item.keyword);
-      if (kwNorm.length > 0 && allRewriteText.includes(kwNorm)) {
+      const altNorm = item.keywordAlt ? normalizeText(item.keywordAlt) : "";
+      if (!kwNorm && !altNorm) continue;
+
+      const checkMatch = (termNorm: string) => {
+        if (!termNorm) return false;
+        const inText = allRewriteText.includes(termNorm);
+        const inAdded = normalizedAddedKeywords.some(
+          (ak) =>
+            ak === termNorm ||
+            (ak.length > 3 && (ak.includes(termNorm) || termNorm.includes(ak)))
+        );
+        const words = termNorm.split(" ").filter((w) => w.length >= 3);
+        const wordsMatch =
+          words.length >= 2 &&
+          words.every((w) => {
+            const root = w.slice(0, Math.min(w.length, 6));
+            return allRewriteText.includes(root);
+          });
+        return inText || inAdded || wordsMatch;
+      };
+
+      if (checkMatch(kwNorm) || (altNorm && checkMatch(altNorm))) {
         newlyCovered.push(item.keyword);
       }
     }

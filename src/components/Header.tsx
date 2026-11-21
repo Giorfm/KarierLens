@@ -25,9 +25,18 @@ export const Header: React.FC<HeaderProps> = ({
               karierlens<span className="text-[#F34E34]">.</span>
             </span>
           </div>
-
-          <div className="inline-flex items-center px-2.5 py-1 bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] font-mono text-[11px] sm:text-xs font-bold text-[#1D1D1B] uppercase tracking-wide">
-            HACKATHON EDITION
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-xl tracking-tight text-slate-900">
+                Karier<span className="text-indigo-600">Lens</span>
+              </span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Cakrawala University Hackathon
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 hidden sm:block">
+              Tulis pengalaman kampusmu dalam Bahasa Indonesia. Dapatkan CV Inggris yang siap dilamar.
+            </p>
           </div>
         </div>
 

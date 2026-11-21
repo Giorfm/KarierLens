@@ -1,16 +1,19 @@
 "use client";
 
-import React from "react";
-import { Printer, AlertTriangle, CheckCircle2, RotateCcw } from "lucide-react";
-import type { CleanCvSection } from "@/types/karierlens";
+import React, { useMemo } from "react";
+import { Printer, AlertTriangle, FileText, CheckCircle2, Info } from "lucide-react";
+import type { CleanCvSection, Lang } from "@/types/karierlens";
 import {
   countPlaceholders,
   countUnfilledPlaceholders,
   splitPlaceholders,
 } from "@/lib/placeholders";
+import { detectTitleInflation } from "@/lib/title-guard";
 
 interface PrintCvTabProps {
   cleanCv?: CleanCvSection;
+  language?: Lang;
+  cvText?: string;
   contacts: {
     emails: string[];
     phones: string[];
@@ -26,6 +29,8 @@ interface PrintCvTabProps {
 
 export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   cleanCv,
+  language = "id",
+  cvText = "",
   contacts,
   isLoading,
   error,
@@ -34,6 +39,19 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   placeholderValues = {},
   onPlaceholderChange,
 }) => {
+  const isEn = language === "en";
+
+  // Title inflation check on cleanCv (Section 3.5.1)
+  const unjustifiedTitles = useMemo(() => {
+    if (!cleanCv) return [];
+    const allCleanTitles = [
+      cleanCv.headline,
+      cleanCv.summary,
+      ...(cleanCv.experiences || []).map((e) => e.title),
+    ].join(" ");
+    return detectTitleInflation(cvText, allCleanTitles);
+  }, [cleanCv, cvText]);
+
   if (error) {
     return (
       <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 text-center space-y-4">
@@ -142,8 +160,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
           "";
 
         const isFilled = filledVal.trim().length > 0;
-        const hint = p.hint || p.text;
-        phIdx++;
+        const hint = p.hint || (isEn ? "fill" : "isi");
 
         return (
           <span key={idx} className="inline align-baseline">
@@ -185,9 +202,34 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Action & Warning Bar on Screen */}
-      <div className="no-print bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
+      {/* Banner Non-Cetak Mode Inggris (Spesifikasi 3.6) */}
+      {isEn && (
+        <div className="no-print bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-start gap-3 text-xs text-indigo-900">
+          <Info className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-bold uppercase tracking-wider text-indigo-950">
+              Dokumen CV Bahasa Inggris
+            </h4>
+            <p className="mt-0.5 leading-relaxed">
+              Terjemahan dibantu AI dan glosarium. Periksa kembali, dan pastikan kamu bisa menjelaskan setiap kalimat dalam bahasa Inggris saat wawancara.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Peringatan Penjaga Kenaikan Jabatan jika terdeteksi (3.5.1) */}
+      {unjustifiedTitles.length > 0 && (
+        <div className="no-print bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 text-xs text-amber-900">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
+          <span>
+            <strong>Peringatan Kenaikan Jabatan:</strong> Kata <strong>&quot;{unjustifiedTitles.join(", ")}&quot;</strong> tidak ada di CV aslimu. Periksa agar tidak terkesan menaikkan jabatan.
+          </span>
+        </div>
+      )}
+
+      {/* Action & Warning Bar */}
+      <div className="no-print bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
           <span
             className={`p-2 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] ${
               unfilledCount === 0 && totalPlaceholders > 0
@@ -230,21 +272,20 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         </button>
       </div>
 
-      {/* Preview Frame with Hard Border on Screen */}
-      <div className="border-2 border-[#1D1D1B] shadow-[6px_6px_0px_#1D1D1B] bg-white p-6 sm:p-12 max-w-4xl mx-auto print:border-none print:shadow-none print:p-0 print:m-0 print:bg-white">
-        {/* Dokumen CV 1 Kolom Standar Harvard / ATS */}
-        <div
-          id="print-area"
-          className="space-y-6 font-sans text-black text-sm"
-        >
-          {/* Header Nama & Kontak */}
-          <div className="text-center border-b border-black pb-4 space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-black uppercase">
-              {renderWithPlaceholders(cleanCv.fullName, "cv_name")}
-            </h1>
-            <p className="text-xs sm:text-sm font-semibold text-black">
-              {renderWithPlaceholders(cleanCv.headline, "cv_headline")}
-            </p>
+      {/* Dokumen CV 1 Kolom Format Harvard/ATS dengan atribut lang */}
+      <div
+        id="print-area"
+        lang={language || "id"}
+        className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0"
+      >
+        {/* Header Nama & Kontak */}
+        <div className="text-center border-b border-slate-300 pb-5 space-y-1.5 print:border-black">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 uppercase print:text-black">
+            {renderWithPlaceholders(cleanCv.fullName, "name")}
+          </h1>
+          <p className="text-xs sm:text-sm font-semibold text-slate-700 print:text-black">
+            {renderWithPlaceholders(cleanCv.headline, "headline")}
+          </p>
 
             {/* Kontak */}
             <div className="text-xs text-black pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1">
@@ -260,87 +301,71 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
             </div>
           </div>
 
-          {/* Ringkasan Profil */}
-          {cleanCv.summary && (
-            <div className="space-y-1">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
-                Ringkasan Profesional
-              </h2>
-              <p className="text-xs sm:text-sm leading-relaxed text-black pt-1">
-                {renderWithPlaceholders(cleanCv.summary, "cv_summary")}
-              </p>
-            </div>
-          )}
+        {/* Ringkasan Profil / Summary */}
+        {cleanCv.summary && (
+          <div className="space-y-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
+              {isEn ? "Summary" : "Ringkasan Profesional"}
+            </h2>
+            <p className="text-xs sm:text-sm leading-relaxed text-slate-800 pt-1 print:text-black">
+              {renderWithPlaceholders(cleanCv.summary, "summary")}
+            </p>
+          </div>
+        )}
 
-          {/* Pendidikan */}
-          {cleanCv.education && (
-            <div className="space-y-1">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
-                Pendidikan
-              </h2>
-              <p className="text-xs sm:text-sm text-black pt-1 font-medium">
-                {renderWithPlaceholders(cleanCv.education, "cv_education")}
-              </p>
-            </div>
-          )}
+        {/* Pendidikan / Education */}
+        {cleanCv.education && (
+          <div className="space-y-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
+              {isEn ? "Education" : "Pendidikan"}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-800 pt-1 font-medium print:text-black">
+              {renderWithPlaceholders(cleanCv.education, "education")}
+            </p>
+          </div>
+        )}
 
-          {/* Pengalaman Organisasi & Proyek */}
-          {cleanCv.experiences && cleanCv.experiences.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
-                Pengalaman Organisasi & Proyek
-              </h2>
-              <div className="space-y-4 pt-1">
-                {cleanCv.experiences.map((exp, expIdx) => (
-                  <div key={expIdx} className="space-y-1">
-                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-xs sm:text-sm">
-                      <span className="font-bold text-black">
-                        {renderWithPlaceholders(exp.title, `cv_exp_${expIdx}_title`)}
-                      </span>
-                      <span className="font-mono text-xs text-black/80 font-semibold">
-                        {renderWithPlaceholders(exp.period, `cv_exp_${expIdx}_period`)}
-                      </span>
-                    </div>
-
-                    <div className="text-xs font-semibold text-black/90">
-                      {renderWithPlaceholders(exp.organization, `cv_exp_${expIdx}_org`)}
-                    </div>
-
-                    {exp.bullets && exp.bullets.length > 0 && (
-                      <ul className="list-disc list-outside ml-5 text-xs sm:text-sm space-y-1 pt-1 text-black">
-                        {exp.bullets.map((bullet, bulletIdx) => (
-                          <li key={bulletIdx} className="leading-relaxed">
-                            {renderWithPlaceholders(
-                              bullet,
-                              `cv_exp_${expIdx}_b_${bulletIdx}`
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+        {/* Pengalaman / Experience */}
+        {cleanCv.experiences && cleanCv.experiences.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
+              {isEn ? "Experience" : "Pengalaman Organisasi & Proyek"}
+            </h2>
+            <div className="space-y-4 pt-1">
+              {cleanCv.experiences.map((exp, expIdx) => (
+                <div key={expIdx} className="space-y-1">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-xs sm:text-sm">
+                    <span className="font-bold text-slate-900 print:text-black">
+                      {renderWithPlaceholders(exp.title, `exp_${expIdx}_title`)}
+                    </span>
+                    <span className="text-xs text-slate-500 font-medium print:text-black">
+                      {renderWithPlaceholders(exp.period, `exp_${expIdx}_period`)}
+                    </span>
+                  </div>
+                  <div className="text-xs font-semibold text-slate-700 print:text-black">
+                    {renderWithPlaceholders(exp.organization, `exp_${expIdx}_org`)}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Kemampuan (Skills) */}
-          {cleanCv.skills && cleanCv.skills.length > 0 && (
-            <div className="space-y-1">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
-                Kemampuan Teknis & Non-Teknis
-              </h2>
-              <p className="text-xs sm:text-sm leading-relaxed text-black pt-1">
-                {cleanCv.skills.map((skill, sIdx) => (
-                  <span key={sIdx}>
-                    {renderWithPlaceholders(skill, `cv_skill_${sIdx}`)}
-                    {sIdx < cleanCv.skills.length - 1 && " • "}
-                  </span>
-                ))}
-              </p>
-            </div>
-          )}
-        </div>
+        {/* Keahlian & Keterampilan / Skills */}
+        {cleanCv.skills && cleanCv.skills.length > 0 && (
+          <div className="space-y-1.5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
+              {isEn ? "Skills" : "Keahlian & Kompetensi"}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-800 pt-1 leading-relaxed print:text-black">
+              {cleanCv.skills.map((sk, idx) => (
+                <span key={idx}>
+                  {renderWithPlaceholders(sk, `skill_${idx}`)}
+                  {idx < cleanCv.skills.length - 1 ? ", " : ""}
+                </span>
+              ))}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

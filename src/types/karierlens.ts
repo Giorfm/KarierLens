@@ -5,6 +5,7 @@ export type ReadinessStatus = "Perlu Banyak Perbaikan" | "Cukup Kompetitif" | "S
 /* ---------- Task: score ---------- */
 export interface JdKeyword {
   keyword: string;            // 1–3 kata, mis. "user research"
+  keywordAlt?: string;        // padanan Indonesia <-> Inggris
   importance: 1 | 2 | 3;      // 3 = wajib, 2 = penting, 1 = nilai tambah
   foundInCv: boolean;         // penilaian semantik LLM
 }
@@ -28,6 +29,7 @@ export interface RewriteItem {
   before: string;             // kalimat asli dari CV
   after: string;              // 1 bullet ≤ 30 kata, placeholder [isi ...] bila angka belum ada
   improvementReason: string;  // ≤ 20 kata
+  translationNote?: string;   // Bahasa Indonesia, ≤ 20 kata, boleh kosong
   keywordsAdded: string[];    // kata kunci JD yang benar-benar tercermin
 }
 export interface CleanCvExperience {
@@ -102,6 +104,7 @@ export interface PresetProfile {
   description: string;
   cvText: string;             // berisi data pribadi FIKTIF (email/telepon contoh) agar masking bisa didemokan
   jobDescription: string;
+  defaultLanguage?: Lang;
   fallbackResult: AnalysisResult;
 }
 export interface PersistedSession {

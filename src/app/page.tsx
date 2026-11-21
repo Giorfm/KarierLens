@@ -127,8 +127,8 @@ export default function Home() {
         newlyCovered: [],
       };
     }
-    return computeScores(result.score, cvText, result.rewrite);
-  }, [result.score, result.rewrite, cvText]);
+    return computeScores(result.score, cvText, result.rewrite, placeholderValues);
+  }, [result.score, result.rewrite, cvText, placeholderValues]);
 
   // Helper to run a single task via API
   const runSingleTask = useCallback(
@@ -230,8 +230,11 @@ export default function Home() {
     setSelectedPresetId(found.id);
     setCvText(found.cvText);
     setJobDescription(found.jobDescription);
-    setLanguage("id");
-    setMaskPiiEnabled(true);
+    if (found.defaultLanguage) {
+      setLanguage(found.defaultLanguage);
+    } else {
+      setLanguage("id");
+    }
     setMode("simulation");
     setResult(found.fallbackResult);
     setTaskStatus({ score: "done", rewrite: "done", interview: "done" });
@@ -419,57 +422,60 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Tab Content Display */}
-          <div className="pt-2">
-            {activeTab === "score" && (
-              <AtsScoreTab
-                scoreData={result.score}
-                computedScores={computedScores}
-                isLoading={taskStatus.score === "loading"}
-                isRewriteLoading={taskStatus.rewrite === "loading"}
-                error={taskErrors.score}
-                onRetry={() => handleRetryTask("score")}
-                onActivateSimulation={handleActivateSimulation}
-              />
-            )}
+        {/* Panel Konten Tab */}
+        <div className="mt-4">
+          {activeTab === "score" && (
+            <AtsScoreTab
+              scoreData={result.score}
+              computedScores={computedScores}
+              isLoading={taskStatus.score === "loading"}
+              isRewriteLoading={taskStatus.rewrite === "loading"}
+              error={taskErrors.score}
+              onRetry={() => handleRetryTask("score")}
+              onActivateSimulation={handleActivateSimulation}
+            />
+          )}
 
-            {activeTab === "rewrite" && (
-              <RewriterTab
-                rewriteData={result.rewrite}
-                isLoading={taskStatus.rewrite === "loading"}
-                error={taskErrors.rewrite}
-                onRetry={() => handleRetryTask("rewrite")}
-                onActivateSimulation={handleActivateSimulation}
-                placeholderValues={placeholderValues}
-                onPlaceholderChange={handlePlaceholderChange}
-              />
-            )}
+          {activeTab === "rewrite" && (
+            <RewriterTab
+              rewriteData={result.rewrite}
+              language={language}
+              cvText={cvText}
+              isLoading={taskStatus.rewrite === "loading"}
+              error={taskErrors.rewrite}
+              onRetry={() => handleRetryTask("rewrite")}
+              onActivateSimulation={handleActivateSimulation}
+              placeholderValues={placeholderValues}
+              onPlaceholderChange={handlePlaceholderChange}
+            />
+          )}
 
-            {activeTab === "interview" && (
-              <InterviewTab
-                interviewData={result.interview}
-                isLoading={taskStatus.interview === "loading"}
-                error={taskErrors.interview}
-                onRetry={() => handleRetryTask("interview")}
-                onActivateSimulation={handleActivateSimulation}
-                placeholderValues={placeholderValues}
-                onPlaceholderChange={handlePlaceholderChange}
-              />
-            )}
+          {activeTab === "interview" && (
+            <InterviewTab
+              interviewData={result.interview}
+              isLoading={taskStatus.interview === "loading"}
+              error={taskErrors.interview}
+              onRetry={() => handleRetryTask("interview")}
+              onActivateSimulation={handleActivateSimulation}
+              placeholderValues={placeholderValues}
+              onPlaceholderChange={handlePlaceholderChange}
+            />
+          )}
 
-            {activeTab === "print" && (
-              <PrintCvTab
-                cleanCv={result.rewrite?.cleanCv}
-                contacts={contacts}
-                isLoading={taskStatus.rewrite === "loading"}
-                error={taskErrors.rewrite}
-                onRetry={() => handleRetryTask("rewrite")}
-                onActivateSimulation={handleActivateSimulation}
-                placeholderValues={placeholderValues}
-                onPlaceholderChange={handlePlaceholderChange}
-              />
-            )}
-          </div>
+          {activeTab === "print" && (
+            <PrintCvTab
+              cleanCv={result.rewrite?.cleanCv}
+              language={language}
+              cvText={cvText}
+              contacts={contacts}
+              isLoading={taskStatus.rewrite === "loading"}
+              error={taskErrors.rewrite}
+              onRetry={() => handleRetryTask("rewrite")}
+              onActivateSimulation={handleActivateSimulation}
+              placeholderValues={placeholderValues}
+              onPlaceholderChange={handlePlaceholderChange}
+            />
+          )}
         </div>
 
         {/* Development Copy JSON Helper */}

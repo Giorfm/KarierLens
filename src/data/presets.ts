@@ -525,4 +525,283 @@ Persyaratan:
       },
     },
   },
+  {
+    id: "dimas-ops",
+    label: "Contoh 3: Tulis ID → CV EN",
+    description: "Dimas Arya — Mahasiswa Teknik Industri semester 7, menulis pengalaman kampus Indonesia untuk melamar Business Operations Intern regional",
+    defaultLanguage: "en",
+    cvText: `Dimas Arya
+Email: dimas.arya@example.com | No HP: 0812-9876-5432 | Domisili: Surabaya, Jawa Timur
+LinkedIn: linkedin.com/in/dimas-arya-contoh
+Universitas Cakrawala — S1 Teknik Industri (2021 - 2025, Semester 7), IPK 3,72
+
+PENGALAMAN ORGANISASI & KEPANITIAAN:
+Koordinator Divisi Dana Usaha (Danus) — HIMA Teknik Industri Cakrawala (Jan 2023 - Des 2023)
+- Bertanggung jawab memimpin pencarian dana sponsor dan mengumpulkan dana usaha sebesar Rp12.500.000 untuk kegiatan tahunan himpunan.
+- Menyusun proposal sponsor dan menghubungi 15 mitra bisnis lokal di Surabaya.
+- Menyusun LPJ keuangan divisi dan berkoordinasi dengan bendahara umum.
+
+Ketua Pelaksana — Seminar Nasional Supply Chain & Logistik (Agu 2023 - Nov 2023)
+- Memimpin tim kepanitiaan 25 mahasiswa dalam merancang rundown acara seminar dan mengundang pembicara industri.
+- Mengatur timeline persiapan acara dan mengawasi koordinasi antar divisi logistik, konsumsi, dan publikasi.
+
+PENGALAMAN AKADEMIK & PROYEK:
+Asisten Praktikum — Laboratorium Pemodelan Sistem & Simulasi Industri (Feb 2024 - Sekarang)
+- Membimbing 60 mahasiswa dalam praktikum simulasi proses antrean dan analisis tata letak fasilitas pabrik.
+- Memeriksa laporan mingguan praktikum dan memberikan umpan balik evaluasi.
+
+Ketua Tim Proyek — Program Kreativitas Mahasiswa (PKM) Bidang Pengabdian (Maret 2023 - Okt 2023)
+- Memimpin proposal PKM penerapan Standard Operating Procedure (SOP) pergudangan untuk UMKM perajin sepatu lokal.
+- Menganalisis alur persediaan bahan baku dan mengurangi waktu tunggu proses pengemasan.
+
+Penyusun Model Simulasi — Tugas Besar Mata Kuliah Manajemen Operasi (Sep 2023 - Jan 2024)
+- Menganalisis bottlenecks pada lintasan perakitan menggunakan diagram alur proses dan time study.
+
+KEAHLIAN:
+Keahlian: Pemetaan Proses Bisnis, Standard Operating Procedure (SOP), Analisis Bottleneck, Time Study, Microsoft Excel (Pivot Table, VLOOKUP), Arena Simulation, AutoCAD Dasar, Komunikasi Kemitraan
+`,
+    jobDescription: `Position: Business Operations Intern
+Company: Southeast Asia Logistics & Tech Solutions
+Location: Jakarta / Remote (Regional Team)
+
+About the Role:
+We are seeking a proactive Business Operations Intern to join our regional operations team. You will support process optimization, data-driven analysis, cross-functional coordination, and tracking operational KPIs across multi-city logistics workflows.
+
+Key Responsibilities:
+- Support process optimization initiatives and map standard operating procedures (SOP) to eliminate operational bottlenecks.
+- Conduct workflow analysis and time-and-motion studies across field operations.
+- Maintain active cross-functional coordination with engineering, field operations, and merchant partners.
+- Monitor operational metrics and build spreadsheet modeling templates to track weekly performance and KPI tracking.
+- Assist in budget management, vendor communication, and resource allocation for regional pilot projects.
+- Prepare structured post-implementation review reports and presentations for leadership.
+
+Requirements:
+- Undergraduate student in Industrial Engineering, Business, Operations Management, or related field.
+- Strong analytical and problem-solving skills with proficiency in spreadsheet modeling (Excel/Google Sheets).
+- Effective communication and organizational skills, comfortable coordinating across diverse teams.
+- Familiarity with simulation modeling, process mapping, and operational problem solving.
+- Prior leadership or project management experience in student organizations is a plus.
+`,
+    fallbackResult: {
+      score: {
+        targetRole: "Business Operations Intern",
+        executiveVerdict:
+          "Kandidat memiliki latar belakang teknik industri yang relevan dengan pemahaman SOP dan pemetaan proses, namun narasi CV masih terikat format kepanitiaan kampus tradisional yang belum meminjam terminologi industri seperti cross-functional coordination, workflow analysis, dan KPI tracking.",
+        jdKeywords: [
+          { keyword: "process optimization", keywordAlt: "pemetaan proses", importance: 3, foundInCv: true },
+          { keyword: "SOP", keywordAlt: "standard operating procedure", importance: 3, foundInCv: true },
+          { keyword: "bottleneck analysis", keywordAlt: "analisis bottleneck", importance: 3, foundInCv: true },
+          { keyword: "time study", keywordAlt: "time study", importance: 2, foundInCv: true },
+          { keyword: "simulation modeling", keywordAlt: "pemodelan simulasi", importance: 1, foundInCv: true },
+          { keyword: "cross-functional coordination", keywordAlt: "koordinasi lintas fungsi", importance: 3, foundInCv: false },
+          { keyword: "workflow analysis", keywordAlt: "analisis alur kerja", importance: 2, foundInCv: false },
+          { keyword: "KPI tracking", keywordAlt: "pelacakan KPI", importance: 2, foundInCv: false },
+          { keyword: "budget management", keywordAlt: "manajemen anggaran", importance: 2, foundInCv: false },
+          { keyword: "vendor communication", keywordAlt: "komunikasi vendor", importance: 1, foundInCv: false },
+          { keyword: "Lean Six Sigma", keywordAlt: "lean six sigma", importance: 2, foundInCv: false },
+          { keyword: "SQL database", keywordAlt: "database SQL", importance: 1, foundInCv: false },
+        ],
+      },
+      rewrite: {
+        rewrites: [
+          {
+            id: "r1",
+            category: "Organisasi / Kepanitiaan",
+            roleContext: "Fundraising Division Coordinator — Industrial Engineering Student Association",
+            before:
+              "Bertanggung jawab memimpin pencarian dana sponsor dan mengumpulkan dana usaha sebesar Rp12.500.000 untuk kegiatan tahunan himpunan.",
+            after:
+              "Spearheaded fundraising initiatives across 15 commercial partners, securing IDR 12,500,000 in sponsorship funds and managing budget allocations for annual student association programs.",
+            improvementReason:
+              "Mengubah klaim pasif menjadi tindakan kepemimpinan terukur dengan terminologi sponsorship dan pengelolaan anggaran.",
+            translationNote:
+              "Memakai istilah 'securing IDR 12,500,000' dan 'student association' sebagai padanan HIMA yang natural.",
+            keywordsAdded: ["budget management", "vendor communication"],
+          },
+          {
+            id: "r2",
+            category: "Organisasi / Kepanitiaan",
+            roleContext: "Project Lead — National Supply Chain & Logistics Seminar",
+            before:
+              "Memimpin tim kepanitiaan 25 mahasiswa dalam merancang rundown acara seminar dan mengundang pembicara industri.",
+            after:
+              "Directed cross-functional coordination among 25 committee members and 4 external industry speakers to execute the event rundown, completing sessions within [fill in time window] minutes of schedule.",
+            improvementReason:
+              "Mengganti deskripsi umum dengan metrik koordinasi lintas divisi dan ketepatan jadwal rundown.",
+            translationNote:
+              "Memakai 'Project Lead' (bukan Manager) dan 'event rundown' agar sesuai konteks tanpa menaikkan jabatan.",
+            keywordsAdded: ["cross-functional coordination"],
+          },
+          {
+            id: "r3",
+            category: "Proyek Kuliah",
+            roleContext: "Operations Management Capstone Project",
+            before:
+              "Menganalisis bottlenecks pada lintasan perakitan menggunakan diagram alur proses dan time study.",
+            after:
+              "Conducted comprehensive workflow analysis and time-and-motion studies along the assembly line, identifying 3 key bottlenecks and projecting a [fill in percentage]% reduction in cycle time.",
+            improvementReason:
+              "Mengintegrasikan terminologi workflow analysis dan time-and-motion study dengan target proyeksi pengurangan cycle time.",
+            translationNote:
+              "'Capstone project' digunakan untuk tugas besar mata kuliah akhir, dan 'time-and-motion studies' untuk studi waktu pabrik.",
+            keywordsAdded: ["workflow analysis", "KPI tracking"],
+          },
+          {
+            id: "r4",
+            category: "Proyek Kuliah",
+            roleContext: "Student Project Lead — Community Empowerment (PKM)",
+            before:
+              "Memimpin proposal PKM penerapan Standard Operating Procedure (SOP) pergudangan untuk UMKM perajin sepatu lokal.",
+            after:
+              "Designed and deployed standardized warehouse SOPs for a local shoe manufacturer, eliminating material handling delays by [fill in percentage]% across [fill in number of workstations] workstations.",
+            improvementReason:
+              "Menekankan dampak penerapan SOP pergudangan terhadap efisiensi penanganan material.",
+            translationNote:
+              "Menggunakan action verb 'designed and deployed' untuk menunjukkan inisiatif implementasi SOP nyata.",
+            keywordsAdded: [],
+          },
+        ],
+        cleanCv: {
+          fullName: "Dimas Arya",
+          headline: "Industrial Engineering Student | Business Operations & Process Optimization Enthusiast",
+          summary:
+            "Industrial Engineering penultimate-year student with proven experience leading student association initiatives, standardizing operating procedures, and executing time-and-motion workflow studies. Skilled in identifying operational bottlenecks and coordinating cross-functional student project teams.",
+          skills: [
+            "Process Optimization",
+            "SOP",
+            "Bottleneck Analysis",
+            "Workflow Analysis",
+            "Cross-functional Coordination",
+            "Time Study",
+            "Simulation Modeling",
+            "KPI Tracking",
+            "Budget Management",
+            "Microsoft Excel (Pivot & VLOOKUP)",
+            "Arena Simulation",
+            "AutoCAD",
+          ],
+          experiences: [
+            {
+              title: "Project Lead",
+              organization: "National Supply Chain Seminar — Cakrawala University",
+              period: "Aug 2023 - Nov 2023",
+              bullets: [
+                "Directed cross-functional coordination among 25 committee members and 4 external industry speakers to execute the event rundown, completing sessions within [fill in time window] minutes of schedule.",
+                "Supervised logistical readiness and inter-division communications to ensure zero operational delays during keynote deliveries.",
+              ],
+            },
+            {
+              title: "Fundraising Division Coordinator",
+              organization: "Industrial Engineering Student Association (HIMA TI)",
+              period: "Jan 2023 - Dec 2023",
+              bullets: [
+                "Spearheaded fundraising initiatives across 15 commercial partners, securing IDR 12,500,000 in sponsorship funds and managing budget allocations for annual student association programs.",
+                "Standardized post-implementation review reports and financial accountability documentation (LPJ) across [fill in number of programs] programs.",
+              ],
+            },
+            {
+              title: "Student Assistant",
+              organization: "Systems Modeling & Industrial Simulation Laboratory",
+              period: "Feb 2024 - Present",
+              bullets: [
+                "Mentored 60 undergraduate students through discrete-event simulation modeling and facility layout optimization practicums.",
+                "Evaluated weekly analytical lab assignments and delivered structured feedback to strengthen student mastery of Arena software.",
+              ],
+            },
+          ],
+          education:
+            "B.S. in Industrial Engineering — Cakrawala University (2021 - 2025, Semester 7), GPA 3.72/4.00",
+        },
+      },
+      interview: {
+        interviewQuestions: [
+          {
+            id: "q1",
+            question:
+              "In our logistics operations, standardizing SOPs and resolving workflow bottlenecks is critical. How does your experience with manufacturing layout modeling and warehouse procedures demonstrate your ability to optimize complex processes?",
+            hrFocus:
+              "Menilai pemahaman kandidat mengenai metodologi perbaikan proses (process optimization) dan kemampuannya mengidentifikasi bottleneck di lapangan.",
+            starGuide: {
+              situation:
+                "While leading a student team for the Community Empowerment Program (PKM) with a local shoe manufacturing workshop in Surabaya.",
+              task:
+                "Identify causes of material handling delays and establish structured standard operating procedures for the packaging workstation.",
+              action:
+                "Mapped the end-to-end workflow using process flow diagrams, conducted time studies on [fill in number of workers] artisans, and drafted standard operating procedures.",
+              result:
+                "Eliminated material searching bottlenecks and reduced packaging turnaround time by [fill in percentage]% across all workstations.",
+            },
+          },
+          {
+            id: "q2",
+            question:
+              "Tell me about a time when you had to align diverse student divisions and external speakers under tight deadlines. How did you maintain cross-functional coordination?",
+            hrFocus:
+              "Menguji kemampuan kandidat dalam kepemimpinan koordinasi lintas divisi dan manajemen jadwal acara di bawah tekanan waktu.",
+            starGuide: {
+              situation:
+                "Serving as Project Lead for the National Supply Chain & Logistics Seminar organized by the Industrial Engineering Student Association.",
+              task:
+                "Coordinate 25 committee members across logistics, event rundown, and publication divisions while managing 4 external industry speakers.",
+              action:
+                "Implemented daily milestone check-ins, established a 15-minute operational buffer in the event run sheet, and conducted cross-division briefing sessions.",
+              result:
+                "Delivered the seminar on schedule with [fill in number of participants] attendees and zero logistical bottlenecks during keynote transitions.",
+            },
+          },
+          {
+            id: "q3",
+            question:
+              "This role involves spreadsheet modeling and KPI tracking for operational performance. Can you share an example of how you utilized quantitative data to drive improvement?",
+            hrFocus:
+              "Melihat ketelitian kandidat dalam memproses data kuantitatif menggunakan spreadsheet dan menerjemahkannya ke dalam keputusan operasional.",
+            starGuide: {
+              situation:
+                "During an Operations Management capstone project analyzing bottlenecks in an industrial assembly line.",
+              task:
+                "Quantify process variances and cycle times to determine optimal labor allocation across assembly stages.",
+              action:
+                "Recorded time study observations across [fill in number of cycles] cycles, built a dynamic spreadsheet model with Pivot Tables, and plotted throughput curves.",
+              result:
+                "Identified 3 major process bottlenecks, recommending a rebalanced line layout that projected an estimated [fill in percentage]% cycle time reduction.",
+            },
+          },
+          {
+            id: "q4",
+            question:
+              "You managed a student fundraising campaign that secured IDR 12.5 million. How would you transfer that vendor communication and budget allocation experience to our regional operations?",
+            hrFocus:
+              "Menilai kemampuan kandidat mengonversi pengalaman danus mahasiswa menjadi kemampuan negosiasi vendor dan pengelolaan alokasi anggaran operasional.",
+            starGuide: {
+              situation:
+                "Leading the Fundraising Division (Danus) for the Industrial Engineering Student Association (HIMA TI).",
+              task:
+                "Fundraise IDR 12,500,000 in working capital to support annual student academic and community programs.",
+              action:
+                "Reached out to 15 local commercial businesses with tailored sponsorship proposals and maintained transparent budget allocation sheets.",
+              result:
+                "Achieved 100% of the fundraising target, securing IDR 12,500,000 and delivering standardized accountability reports (LPJ) with zero audit discrepancies.",
+            },
+          },
+          {
+            id: "q5",
+            question:
+              "You have not previously worked in a fast-paced corporate logistics tech environment. How will you quickly master our Lean frameworks and regional supply chain systems?",
+            hrFocus:
+              "Menguji kejujuran kandidat dalam mengakui batas pengalaman profesionalnya dan komitmen belajar mandiri terhadap prinsip Lean Six Sigma.",
+            starGuide: {
+              situation:
+                "Transitioning academic industrial engineering foundations and lab practicums into regional operational tech execution.",
+              task:
+                "Quickly bridge theoretical knowledge of Lean frameworks with live enterprise logistics software.",
+              action:
+                "Leverage strong fundamentals in simulation modeling and Excel while undertaking self-paced study on Lean Six Sigma via [fill in learning platform].",
+              result:
+                "Confidence in mastering internal SOPs and contributing to weekly performance tracking dashboards within the first [fill in number of weeks] weeks.",
+            },
+          },
+        ],
+      },
+    },
+  },
 ];
