@@ -2,8 +2,6 @@
 
 import React, { useMemo } from "react";
 import {
-  FileText,
-  Briefcase,
   ShieldCheck,
   Upload,
   Eye,
@@ -177,197 +175,223 @@ export const InputPanel: React.FC<InputPanelProps> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Kolom Kiri: Input CV */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 font-semibold text-slate-900 text-sm">
-              <FileText className="h-4 w-4 text-indigo-600" />
-              Teks Pengalaman CV Kamu
-            </label>
+        {/* Kolom 01: Input CV */}
+        <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] rounded-none flex flex-col">
+          {/* Header Strip CV: Acid Yellow */}
+          <div className="bg-[#EFE84A] border-b-2 border-[#1D1D1B] px-4 py-3 flex items-center justify-between">
+            <span className="font-mono text-xs sm:text-sm font-black text-[#1D1D1B] uppercase tracking-wider flex items-center gap-2">
+              01 // DATA PENGALAMAN (CV)
+            </span>
             <span
-              className={`text-xs ${
-                cvLength < 30 || cvLength > 12000
-                  ? "text-rose-500 font-medium"
-                  : "text-slate-400"
+              className={`font-mono text-xs font-bold ${
+                cvLength > 0 && (cvLength < 30 || cvLength > 12000)
+                  ? "text-[#F34E34]"
+                  : "text-[#1D1D1B]"
               }`}
             >
-              {cvLength.toLocaleString()} / 12.000 karakter
+              {cvLength.toLocaleString()} / 12.000
             </span>
           </div>
 
-          {/* Upload PDF Area */}
-          {onPdfUpload && (
-            <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-              className="border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50/70 hover:bg-indigo-50/30 rounded-xl p-3 text-center transition cursor-pointer relative"
-            >
-              <input
-                type="file"
-                accept=".pdf,application/pdf"
-                onChange={handleFileChange}
-                disabled={isLoading || pdfParsing}
-                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                title="Pilih file PDF"
-              />
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-600 font-medium">
-                {pdfParsing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 text-indigo-600 animate-spin" />
-                    <span>Mengekstrak teks PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4 text-indigo-600" />
-                    <span>
-                      Tarik file PDF CV ke sini atau{" "}
-                      <span className="text-indigo-600 underline">klik untuk unggah</span> (Maks. 5 MB)
-                    </span>
-                  </>
-                )}
+          <div className="p-4 sm:p-5 flex-1 flex flex-col space-y-3">
+            {/* PDF dropzone with thick dashed border */}
+            {onPdfUpload && (
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-[#1D1D1B] bg-[#F4F1EA] hover:bg-[#EFE84A]/25 p-3 text-center transition cursor-pointer relative group"
+              >
+                <input
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  onChange={handleFileChange}
+                  disabled={isLoading || pdfParsing}
+                  className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  title="Pilih file PDF"
+                />
+                <div className="flex items-center justify-center gap-2 font-mono text-xs font-bold text-[#1D1D1B]">
+                  {pdfParsing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 text-[#1D1D1B] animate-spin" />
+                      <span>MENGEKSTRAK PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 text-[#1D1D1B]" />
+                      <span>
+                        UNGGAH PDF CV{" "}
+                        <span className="underline decoration-2 text-[#1E40AF]">(KLIK / TARIK FILE)</span> — MAKS. 5 MB
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
+            )}
+
+            {/* Textarea CV */}
+            <div className="relative flex-1">
+              <textarea
+                rows={9}
+                value={cvText}
+                onChange={(e) => setCvText(e.target.value)}
+                placeholder={`Tempel draf CV di sini (organisasi, kepanitiaan, asisten lab, proyek kuliah)...`}
+                className="w-full min-h-[220px] rounded-none border-2 border-[#1D1D1B] bg-[#F4F1EA] p-4 text-sm font-sans text-[#1D1D1B] placeholder:text-[#1D1D1B]/50 focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[3px_3px_0px_#1D1D1B] transition resize-y"
+              />
             </div>
-          )}
 
-          <div className="relative">
-            <textarea
-              rows={9}
-              value={cvText}
-              onChange={(e) => setCvText(e.target.value)}
-              placeholder="Tempel draf CV kamu di sini dalam Bahasa Indonesia. Tulis pengalaman organisasi (BEM/HIMA), kepanitiaan, asisten lab, atau proyek kuliahmu apa adanya...
-
-Contoh:
-Raka Pratama - raka@example.com - 081234567890
-- Koordinator Divisi Acara Seminar Teknologi HIMA SI (bertugas membuat rundown dan kontak pembicara)
-- Koordinator Danus Bazar: mengumpulkan dana Rp12.500.000 melalui sponsor dan penjualan merchandise
-- Proyek Tugas Besar: Bikin sistem inventaris pakai React dan MySQL
-- Asisten Praktikum Basis Data: membimbing 45 mahasiswa..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/40 p-3.5 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition resize-y font-sans"
-            />
+            {cvLength > 0 && cvLength < 30 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Minimal 30 karakter.
+              </p>
+            )}
+            {cvLength > 12000 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Maksimal 12.000 karakter.
+              </p>
+            )}
           </div>
-
-          {cvLength > 0 && cvLength < 30 && (
-            <p className="text-xs text-rose-500">
-              * Teks CV terlalu pendek. Masukkan minimal 30 karakter.
-            </p>
-          )}
-          {cvLength > 12000 && (
-            <p className="text-xs text-rose-500">
-              * Teks CV melebihi batas maksimal 12.000 karakter.
-            </p>
-          )}
         </div>
 
-        {/* Kolom Kanan: Input JD */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 font-semibold text-slate-900 text-sm">
-              <Briefcase className="h-4 w-4 text-indigo-600" />
-              Target Lowongan / Job Description (JD)
-            </label>
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-xs ${
-                  jdLength < 30 || jdLength > 8000
-                    ? "text-rose-500 font-medium"
-                    : "text-slate-400"
-                }`}
-              >
-                {jdLength.toLocaleString()} / 8.000 karakter
+        {/* Kolom 02: Input JD */}
+        <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] rounded-none flex flex-col">
+          {/* Header Strip JD: Cobalt Blue */}
+          <div className="bg-[#1E40AF] text-[#F4F1EA] border-b-2 border-[#1D1D1B] px-4 py-3 flex items-center justify-between">
+            <span className="font-mono text-xs sm:text-sm font-black text-[#F4F1EA] uppercase tracking-wider flex items-center gap-2">
+              02 // TARGET LOWONGAN (JD)
+            </span>
+            <span
+              className={`font-mono text-xs font-bold ${
+                jdLength > 0 && (jdLength < 30 || jdLength > 8000)
+                  ? "text-[#EFE84A]"
+                  : "text-[#F4F1EA]"
+              }`}
+            >
+              {jdLength.toLocaleString()} / 8.000
+            </span>
+          </div>
+
+          <div className="p-4 sm:p-5 flex-1 flex flex-col space-y-3">
+            {/* Opsi Bahasa */}
+            <div className="flex items-center justify-between bg-[#F4F1EA] border-2 border-[#1D1D1B] p-2.5">
+              <span className="font-mono text-xs font-bold text-[#1D1D1B] flex items-center gap-1.5 uppercase">
+                <Globe className="h-3.5 w-3.5 text-[#1D1D1B]" />
+                BAHASA:
               </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setLanguage("id")}
+                  className={`px-3 py-1 font-mono text-xs font-bold border-2 border-[#1D1D1B] transition cursor-pointer ${
+                    language === "id"
+                      ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B]"
+                      : "bg-white text-[#1D1D1B] hover:bg-[#EFE84A]/30"
+                  }`}
+                >
+                  INDONESIA
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage("en")}
+                  className={`px-3 py-1 font-mono text-xs font-bold border-2 border-[#1D1D1B] transition cursor-pointer ${
+                    language === "en"
+                      ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B]"
+                      : "bg-white text-[#1D1D1B] hover:bg-[#EFE84A]/30"
+                  }`}
+                >
+                  ENGLISH
+                </button>
+              </div>
             </div>
+
+            {/* Textarea JD */}
+            <div className="relative flex-1">
+              <textarea
+                rows={9}
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder={`Tempel kualifikasi atau Job Description lowongan kerja target di sini...`}
+                className="w-full min-h-[220px] rounded-none border-2 border-[#1D1D1B] bg-[#F4F1EA] p-4 text-sm font-sans text-[#1D1D1B] placeholder:text-[#1D1D1B]/50 focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[3px_3px_0px_#1D1D1B] transition resize-y"
+              />
+            </div>
+
+            {jdLength > 0 && jdLength < 30 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Minimal 30 karakter.
+              </p>
+            )}
+            {jdLength > 8000 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Maksimal 8.000 karakter.
+              </p>
+            )}
           </div>
-
-          <div className="relative">
-            <textarea
-              rows={9}
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Tempel rincian lowongan kerja, kualifikasi magang (MSIB/mandiri), atau Job Description target di sini... (Bahasa Indonesia atau Bahasa Inggris)
-
-Contoh:
-Product Operations Intern - Southeast Asia Tech
-Responsibilities:
-- Conduct user research and assist in operational workflow mapping
-- Coordinate cross-functional requirements with engineering and design
-- Track project milestones and resolve process bottlenecks..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/40 p-3.5 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition resize-y font-sans"
-            />
-          </div>
-
-          {jdLength > 0 && jdLength < 30 && (
-            <p className="text-xs text-rose-500">
-              * Teks lowongan terlalu pendek. Masukkan minimal 30 karakter.
-            </p>
-          )}
-          {jdLength > 8000 && (
-            <p className="text-xs text-rose-500">
-              * Teks lowongan melebihi batas maksimal 8.000 karakter.
-            </p>
-          )}
         </div>
       </div>
 
       {/* Baris Privasi & Masking PII */}
-      <div className="bg-slate-50/70 border border-slate-200 rounded-xl p-4 space-y-3">
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 sm:p-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <label className="flex items-center gap-2 cursor-pointer select-none">
+          <label className="flex items-center gap-3 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={maskPiiEnabled}
               onChange={(e) => setMaskPiiEnabled(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+              className="h-5 w-5 rounded-none border-2 border-[#1D1D1B] text-[#1E40AF] focus:ring-0 cursor-pointer accent-[#1E40AF]"
             />
-            <span className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              Samarkan data pribadi di browser sebelum dikirim ke AI
+            <span className="font-mono text-xs sm:text-sm font-bold text-[#1D1D1B] uppercase flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-[#2ED47A]" />
+              Samarkan Data Pribadi (Privasi Klien)
             </span>
           </label>
 
-          <span className="text-[11px] text-slate-500 italic">
-            * Nama lengkap tidak disamarkan
+          <span className="font-mono text-xs font-bold text-[#F34E34]">
+            * Nama tidak disamarkan.
           </span>
         </div>
 
         {maskPiiEnabled && (
-          <div className="space-y-2 pt-1 border-t border-slate-200/60 text-xs">
-            <div className="flex flex-wrap items-center gap-2 text-slate-600">
-              <span className="font-medium text-slate-700">Ringkasan Privasi:</span>
+          <div className="space-y-3 pt-3 border-t-2 border-[#1D1D1B]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-xs font-bold uppercase text-[#1D1D1B]">
+                PRIVASI:
+              </span>
               {totalMasked === 0 ? (
-                <span className="text-slate-400">Tidak ada kontak sensitif terdeteksi di CV</span>
+                <span className="font-mono text-xs text-[#1D1D1B]/60">
+                  Kontak aman
+                </span>
               ) : (
                 <>
-                  <span className="bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full">
-                    {totalMasked} entri disamarkan
+                  <span className="bg-[#2ED47A] text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2.5 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                    {totalMasked} DISAMARKAN
                   </span>
                   {piiData.counts.email > 0 && (
-                    <span className="bg-slate-200/80 px-2 py-0.5 rounded text-slate-700">
-                      Email: {piiData.counts.email}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      email: {piiData.counts.email}
                     </span>
                   )}
                   {piiData.counts.phone > 0 && (
-                    <span className="bg-slate-200/80 px-2 py-0.5 rounded text-slate-700">
-                      Telepon: {piiData.counts.phone}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      telepon: {piiData.counts.phone}
                     </span>
                   )}
                   {piiData.counts.link > 0 && (
-                    <span className="bg-slate-200/80 px-2 py-0.5 rounded text-slate-700">
-                      Link: {piiData.counts.link}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      link: {piiData.counts.link}
                     </span>
                   )}
                   {piiData.counts.nik > 0 && (
-                    <span className="bg-slate-200/80 px-2 py-0.5 rounded text-slate-700">
-                      NIK: {piiData.counts.nik}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      nik: {piiData.counts.nik}
                     </span>
                   )}
                   {piiData.counts.nim > 0 && (
-                    <span className="bg-slate-200/80 px-2 py-0.5 rounded text-slate-700">
-                      NIM: {piiData.counts.nim}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      nim: {piiData.counts.nim}
                     </span>
                   )}
                   {piiData.counts.address > 0 && (
-                    <span className="bg-slate-200/80 px-2 py-0.5 rounded text-slate-700">
-                      Alamat: {piiData.counts.address}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      alamat: {piiData.counts.address}
                     </span>
                   )}
                 </>
@@ -375,12 +399,12 @@ Responsibilities:
             </div>
 
             {totalMasked > 0 && (
-              <details className="text-[11px] text-slate-500 cursor-pointer pt-1">
-                <summary className="hover:text-indigo-600 inline-flex items-center gap-1 font-medium select-none">
-                  <Eye className="h-3 w-3" />
-                  Lihat teks CV yang dikirim ke AI
+              <details className="cursor-pointer pt-1">
+                <summary className="font-mono text-xs font-bold text-[#1E40AF] hover:underline inline-flex items-center gap-1.5 uppercase select-none">
+                  <Eye className="h-3.5 w-3.5" />
+                  LIHAT HASIL MASKING
                 </summary>
-                <div className="mt-2 p-3 bg-slate-900 text-slate-100 rounded-lg font-mono text-[11px] max-h-40 overflow-y-auto whitespace-pre-wrap">
+                <div className="mt-2 font-mono bg-[#1D1D1B] text-[#F4F1EA] p-4 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] text-xs max-h-40 overflow-y-auto whitespace-pre-wrap">
                   {piiData.masked}
                 </div>
               </details>
@@ -389,23 +413,23 @@ Responsibilities:
         )}
       </div>
 
-      {/* Tombol Eksekusi Audit */}
+      {/* Primary CTA Button: Oversized Acid Yellow Tactile Button */}
       <div>
         <button
           type="button"
           onClick={onAudit}
           disabled={!canAudit}
-          className="w-full py-3.5 px-6 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
+          className="w-full py-4 px-6 bg-[#EFE84A] text-[#1D1D1B] font-black text-base uppercase tracking-wider border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1D1D1B] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100 disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer"
         >
           {isLoading ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Menganalisis Kata Kunci, Menulis Ulang & Menyiapkan Wawancara...</span>
+              <Loader2 className="h-5 w-5 animate-spin text-[#1D1D1B]" />
+              <span>MENGANALISIS CV...</span>
             </>
           ) : (
             <>
-              <Sparkles className="h-5 w-5" />
-              <span>Audit CV & Terjemahkan Pengalaman ke Bahasa Rekruter</span>
+              <Sparkles className="h-5 w-5 text-[#1D1D1B]" />
+              <span>AUDIT CV SEKARANG</span>
             </>
           )}
         </button>

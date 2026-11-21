@@ -20,6 +20,7 @@ import { PRESET_PROFILES } from "@/data/presets";
 import { computeScores } from "@/lib/scoring";
 import { maskPii } from "@/lib/pii";
 import { loadSession, saveSession, clearSession } from "@/lib/storage";
+import { extractTextFromPdf } from "@/lib/pdf-parser";
 
 import { Header } from "@/components/Header";
 import { StatusBanner } from "@/components/StatusBanner";
@@ -44,7 +45,6 @@ export default function Home() {
 
   // Analysis result states
   const [result, setResult] = useState<Partial<AnalysisResult>>({});
-  const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
   const [taskStatus, setTaskStatus] = useState<Record<TaskName, "idle" | "loading" | "done" | "error">>({
     score: "idle",
     rewrite: "idle",
@@ -57,12 +57,16 @@ export default function Home() {
   });
   const [globalError, setGlobalError] = useState<{ code: string; message: string } | null>(null);
 
-  // PDF state
+  // User-completed placeholder values synchronized across tabs
+  const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
+
+  // PDF parsing state
   const [pdfParsing, setPdfParsing] = useState<boolean>(false);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
 
   // Ref for aborting requests
   const abortControllerRef = useRef<AbortController | null>(null);
+  const resultsRef = useRef<HTMLDivElement | null>(null);
 
   // 1. Load session from localStorage on mount (client-only to avoid hydration mismatch)
   useEffect(() => {
@@ -147,46 +151,41 @@ export default function Home() {
           signal,
         });
 
-        const json = (await res.json()) as AnalyzeResponse<unknown>;
+        const data: AnalyzeResponse<unknown> = await res.json();
 
-        if (!res.ok || !json.ok) {
-          const errCode = !json.ok ? json.code : "UPSTREAM";
-          const errMsg = !json.ok ? json.message : `Permintaan gagal (${res.status})`;
-
+        if (!data.ok) {
           setTaskStatus((prev) => ({ ...prev, [task]: "error" }));
-          setTaskErrors((prev) => ({ ...prev, [task]: errMsg }));
-
-          if (errCode === "NO_API_KEY" || errCode === "RATE_LIMIT") {
-            setGlobalError({ code: errCode, message: errMsg });
+          setTaskErrors((prev) => ({ ...prev, [task]: data.message }));
+          if (data.code === "RATE_LIMIT" || data.code === "NO_API_KEY") {
+            setGlobalError({ code: data.code, message: data.message });
           }
           return;
         }
 
-        // Success: update task result
+        // Success: update partial result immediately (progressive rendering)
         setResult((prev) => ({
           ...prev,
-          [task]: json.data,
+          [task]: data.data,
         }));
         setTaskStatus((prev) => ({ ...prev, [task]: "done" }));
       } catch (err: unknown) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return; // Request was aborted by user
+        if ((err as Error)?.name === "AbortError") {
+          return;
         }
-        const errMsg = err instanceof Error ? err.message : "Terjadi kesalahan jaringan.";
+        const errorMsg = (err as Error)?.message || "Terjadi kesalahan jaringan atau server.";
         setTaskStatus((prev) => ({ ...prev, [task]: "error" }));
-        setTaskErrors((prev) => ({ ...prev, [task]: errMsg }));
+        setTaskErrors((prev) => ({ ...prev, [task]: errorMsg }));
       }
     },
     [language]
   );
 
-  // 5. Run full analysis (3 parallel requests)
+  // 5. Run full analysis (3 parallel requests via Promise.allSettled)
   const handleAudit = useCallback(async () => {
     if (!cvText || cvText.trim().length < 30 || !jobDescription || jobDescription.trim().length < 30) {
       return;
     }
 
-    // Abort previous running requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -198,23 +197,24 @@ export default function Home() {
     setResult({});
     setTaskErrors({ score: null, rewrite: null, interview: null });
 
-    // Prepare text to send (masked if toggle is on)
     const textToSend = maskPiiEnabled ? maskPii(cvText).masked : cvText;
     const jdToSend = jobDescription;
 
-    // Trigger all 3 tasks in parallel
     Promise.allSettled([
       runSingleTask("score", textToSend, jdToSend, controller.signal),
       runSingleTask("rewrite", textToSend, jdToSend, controller.signal),
       runSingleTask("interview", textToSend, jdToSend, controller.signal),
     ]);
+
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   }, [cvText, jobDescription, maskPiiEnabled, runSingleTask]);
 
   // 6. Retry single task
   const handleRetryTask = (task: TaskName) => {
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
     const textToSend = maskPiiEnabled ? maskPii(cvText).masked : cvText;
+    const controller = new AbortController();
     runSingleTask(task, textToSend, jobDescription, controller.signal);
   };
 
@@ -236,19 +236,22 @@ export default function Home() {
       setLanguage("id");
     }
     setMode("simulation");
-    setGlobalError(null);
     setResult(found.fallbackResult);
     setTaskStatus({ score: "done", rewrite: "done", interview: "done" });
     setTaskErrors({ score: null, rewrite: null, interview: null });
     setActiveTab("score");
+
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
-  // 8. Activate Simulation Mode
+  // 8. Activate Simulation Mode manually
   const handleActivateSimulation = () => {
     handleSelectPreset(selectedPresetId || "raka-pm");
   };
 
-  // 9. Reset all
+  // 9. Reset session
   const handleReset = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -256,6 +259,8 @@ export default function Home() {
     clearSession();
     setCvText("");
     setJobDescription("");
+    setLanguage("id");
+    setMaskPiiEnabled(true);
     setMode("live");
     setResult({});
     setPlaceholderValues({});
@@ -265,159 +270,157 @@ export default function Home() {
     setActiveTab("score");
   };
 
-  // 10. Handle placeholder change (interactive inline inputs)
-  const handlePlaceholderChange = useCallback(
-    (key: string, value: string, originalPlaceholder: string) => {
-      setPlaceholderValues((prev) => ({
-        ...prev,
-        [key]: value,
-        [originalPlaceholder]: value,
-      }));
-    },
-    []
-  );
+  // 10. Handle placeholder change (interactive synchronized updates)
+  const handlePlaceholderChange = (key: string, value: string, originalPlaceholder: string) => {
+    setPlaceholderValues((prev) => ({
+      ...prev,
+      [key]: value,
+      [originalPlaceholder]: value,
+    }));
+  };
 
-  // 10. PDF parser handler (Tahap 6)
+  // 11. PDF Upload Handler
   const handlePdfUpload = async (file: File) => {
     setPdfParsing(true);
     try {
-      const { extractTextFromPdf } = await import("@/lib/pdf-parser");
       const extracted = await extractTextFromPdf(file);
       setCvText(extracted);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Gagal mengekstrak teks PDF.";
-      alert(msg);
+      alert((err as Error)?.message || "Gagal mengekstrak teks dari PDF.");
     } finally {
       setPdfParsing(false);
     }
   };
 
-  // 11. Copy JSON result helper (Should Have)
+  // 12. Copy JSON for Dev Mode
   const handleCopyJson = () => {
-    if (!result) return;
     const jsonStr = JSON.stringify(result, null, 2);
-    navigator.clipboard?.writeText(jsonStr).then(() => {
-      setCopiedJson(true);
-      setTimeout(() => setCopiedJson(false), 2000);
-    });
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        setCopiedJson(true);
+        setTimeout(() => setCopiedJson(false), 2000);
+      });
+    }
   };
 
-  const isAnalysisLoading = Object.values(taskStatus).some((s) => s === "loading");
+  const isAnyLoading = Object.values(taskStatus).some((s) => s === "loading");
+  const hasResults = Boolean(result.score || result.rewrite || result.interview);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-[#F4F1EA] text-[#1D1D1B] flex flex-col font-sans selection:bg-[#EFE84A] selection:text-[#1D1D1B]">
       {/* Header */}
       <Header
         onSelectPreset={handleSelectPreset}
         onReset={handleReset}
-        isLoading={isAnalysisLoading}
+        isLoading={isAnyLoading}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Status & Simulation Banners */}
+      {/* Main Content Area */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1 w-full">
+        {/* Status Banner */}
         <StatusBanner
           isSimulation={mode === "simulation"}
           globalError={globalError}
           onActivateSimulation={handleActivateSimulation}
         />
 
-        {/* Input Form Panel */}
+        {/* Two-column Input Panel */}
         <InputPanel
           cvText={cvText}
-          setCvText={(val) => {
-            setCvText(val);
-            if (mode === "simulation") setMode("live");
-          }}
+          setCvText={setCvText}
           jobDescription={jobDescription}
-          setJobDescription={(val) => {
-            setJobDescription(val);
-            if (mode === "simulation") setMode("live");
-          }}
+          setJobDescription={setJobDescription}
           language={language}
           setLanguage={setLanguage}
           maskPiiEnabled={maskPiiEnabled}
           setMaskPiiEnabled={setMaskPiiEnabled}
           onAudit={handleAudit}
-          isLoading={isAnalysisLoading}
+          isLoading={isAnyLoading}
           onPdfUpload={handlePdfUpload}
           pdfParsing={pdfParsing}
         />
 
-        {/* Task Progress Chips */}
-        <TaskProgress taskStatus={taskStatus} onRetryTask={handleRetryTask} />
+        {/* Task Progress Tracker */}
+        <TaskProgress
+          taskStatus={taskStatus}
+          onRetryTask={handleRetryTask}
+        />
 
-        {/* Tab Navigasi Panel Hasil */}
-        <div className="no-print border-b border-slate-200">
-          <nav className="flex space-x-2 sm:space-x-6 overflow-x-auto" aria-label="Tabs">
+        {/* Workspace Result Tabs Section */}
+        <div ref={resultsRef} className="no-print pt-4 space-y-4">
+          {/* Folder-tab style navigation bar with hard offset shadow */}
+          <div className="border-b-4 border-[#1D1D1B] flex flex-wrap gap-2">
+            {/* Tab 01: Score */}
             <button
               type="button"
               onClick={() => setActiveTab("score")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
+              className={`font-mono text-xs sm:text-sm font-black uppercase tracking-wider py-3 px-4 sm:px-5 flex items-center gap-2 border-2 border-[#1D1D1B] transition-all cursor-pointer ${
                 activeTab === "score"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                  ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] -mb-[4px] border-b-2"
+                  : "bg-white text-[#1D1D1B] hover:bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B]"
               }`}
             >
               <Target className="h-4 w-4" />
-              <span>Skor Kecocokan CV</span>
-              {computedScores.initial > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
-                  {computedScores.initial}%
+              <span>01 // AUDIT SKOR</span>
+              {result.score && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#1D1D1B] text-[#EFE84A]">
+                  {computedScores.initial}/100
                 </span>
               )}
             </button>
 
+            {/* Tab 02: Rewrite */}
             <button
               type="button"
               onClick={() => setActiveTab("rewrite")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
+              className={`font-mono text-xs sm:text-sm font-black uppercase tracking-wider py-3 px-4 sm:px-5 flex items-center gap-2 border-2 border-[#1D1D1B] transition-all cursor-pointer ${
                 activeTab === "rewrite"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                  ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] -mb-[4px] border-b-2"
+                  : "bg-white text-[#1D1D1B] hover:bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B]"
               }`}
             >
               <FileEdit className="h-4 w-4" />
-              <span>Penulisan Ulang Pengalaman</span>
-              {result.rewrite?.rewrites && result.rewrite.rewrites.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+              <span>02 // REVISI PENGALAMAN</span>
+              {result.rewrite?.rewrites && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#2ED47A] text-[#1D1D1B]">
                   {result.rewrite.rewrites.length}
                 </span>
               )}
             </button>
 
+            {/* Tab 03: Interview */}
             <button
               type="button"
               onClick={() => setActiveTab("interview")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
+              className={`font-mono text-xs sm:text-sm font-black uppercase tracking-wider py-3 px-4 sm:px-5 flex items-center gap-2 border-2 border-[#1D1D1B] transition-all cursor-pointer ${
                 activeTab === "interview"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                  ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] -mb-[4px] border-b-2"
+                  : "bg-white text-[#1D1D1B] hover:bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B]"
               }`}
             >
               <MessageSquare className="h-4 w-4" />
-              <span>Simulasi Wawancara STAR</span>
+              <span>03 // SIMULASI STAR</span>
               {result.interview?.interviewQuestions && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#1E40AF] text-[#F4F1EA]">
                   {result.interview.interviewQuestions.length}
                 </span>
               )}
             </button>
 
+            {/* Tab 04: Print */}
             <button
               type="button"
               onClick={() => setActiveTab("print")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
+              className={`font-mono text-xs sm:text-sm font-black uppercase tracking-wider py-3 px-4 sm:px-5 flex items-center gap-2 border-2 border-[#1D1D1B] transition-all cursor-pointer ${
                 activeTab === "print"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                  ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] -mb-[4px] border-b-2"
+                  : "bg-white text-[#1D1D1B] hover:bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B]"
               }`}
             >
               <Printer className="h-4 w-4" />
-              <span>Cetak CV 1 Kolom</span>
+              <span>04 // CETAK CV ATS</span>
             </button>
-          </nav>
-        </div>
+          </div>
 
         {/* Panel Konten Tab */}
         <div className="mt-4">
@@ -475,23 +478,23 @@ export default function Home() {
           )}
         </div>
 
-        {/* Should Have: Tombol Salin JSON Hasil di Development */}
-        {process.env.NODE_ENV !== "production" && result && Object.keys(result).length > 0 && (
-          <div className="no-print pt-6 border-t border-slate-200 flex justify-end">
+        {/* Development Copy JSON Helper */}
+        {hasResults && (
+          <div className="no-print pt-6 border-t-2 border-[#1D1D1B] flex justify-end">
             <button
               type="button"
               onClick={handleCopyJson}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs text-slate-600 hover:bg-slate-50 transition shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
             >
               {copiedJson ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>JSON Hasil Tersalin!</span>
+                  <Check className="h-3.5 w-3.5 text-[#2ED47A] stroke-[3]" />
+                  <span>JSON TERSALIN!</span>
                 </>
               ) : (
                 <>
                   <Copy className="h-3.5 w-3.5" />
-                  <span>Salin JSON Hasil (Dev Mode)</span>
+                  <span>SALIN JSON</span>
                 </>
               )}
             </button>
@@ -499,24 +502,26 @@ export default function Home() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="no-print border-t border-slate-200 bg-white mt-12 py-6 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Tersimpan di browser pengguna</span>
-            <span className="text-slate-300">|</span>
+      {/* Neo-Brutalist Footer */}
+      <footer className="no-print border-t-4 border-[#1D1D1B] bg-[#F4F1EA] py-8 text-xs text-[#1D1D1B] font-mono">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-block w-3 h-3 bg-[#2ED47A] border border-[#1D1D1B]"></span>
+            <span className="font-bold uppercase tracking-wide">
+              LOCALSTORAGE AKTIF
+            </span>
+            <span>|</span>
             <button
               type="button"
               onClick={handleActivateSimulation}
-              className="text-indigo-600 hover:underline font-medium cursor-pointer"
+              className="text-[#1E40AF] underline font-black hover:text-[#1D1D1B] cursor-pointer uppercase"
             >
-              Aktifkan Mode Simulasi
+              MODE SIMULASI
             </button>
           </div>
 
-          <p className="text-center sm:text-right max-w-xl text-[11px] text-slate-400">
-            Data pribadi disamarkan di browser sebelum dikirim ke penyedia model AI; aplikasi ini tidak menyimpan CV di server.
+          <p className="text-center md:text-right max-w-xl text-[11px] text-[#1D1D1B]/80 leading-relaxed">
+            Privasi aman: data disamarkan di browser sebelum diproses AI.
           </p>
         </div>
       </footer>

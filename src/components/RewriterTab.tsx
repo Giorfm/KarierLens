@@ -4,11 +4,10 @@ import React, { useState, useMemo } from "react";
 import {
   Sparkles,
   ArrowRight,
+  ArrowDown,
   Copy,
   Check,
   RotateCcw,
-  AlertCircle,
-  FileEdit,
   Tag,
   AlertTriangle,
   CheckCircle2,
@@ -93,29 +92,26 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 1. Error state
   if (error) {
     return (
-      <div className="bg-white rounded-2xl border border-rose-200 p-8 text-center space-y-4 shadow-xs">
-        <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-          <AlertCircle className="h-6 w-6" />
-        </div>
-        <div className="max-w-md mx-auto space-y-1">
-          <h3 className="font-bold text-slate-900 text-base">Gagal Menulis Ulang Pengalaman</h3>
-          <p className="text-sm text-slate-600">{error}</p>
-        </div>
+      <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 text-center space-y-4">
+        <h3 className="font-mono text-base font-black uppercase tracking-wider">
+          [!] GAGAL MENULIS ULANG
+        </h3>
+        <p className="font-sans text-sm max-w-lg mx-auto">{error}</p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
             <RotateCcw className="h-4 w-4" />
-            Coba Lagi
+            COBA LAGI
           </button>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Tampilkan Hasil Simulasi
+            LIHAT SIMULASI
           </button>
         </div>
       </div>
@@ -125,14 +121,14 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 2. Loading Skeleton state
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 animate-pulse">
-        <div className="h-10 w-64 bg-slate-100 rounded-lg"></div>
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 space-y-6 animate-pulse">
+        <div className="h-14 bg-[#F4F1EA] border-2 border-[#1D1D1B]"></div>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border border-slate-200 rounded-xl p-5 space-y-4">
-            <div className="h-6 w-48 bg-slate-100 rounded"></div>
+          <div key={i} className="border-2 border-[#1D1D1B] p-6 space-y-4">
+            <div className="h-6 w-1/3 bg-[#F4F1EA]"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="h-24 bg-slate-100 rounded-lg"></div>
-              <div className="h-24 bg-slate-100 rounded-lg"></div>
+              <div className="h-28 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
+              <div className="h-28 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
             </div>
           </div>
         ))}
@@ -143,28 +139,89 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 3. Empty state
   if (!rewriteData || !rewriteData.rewrites || rewriteData.rewrites.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-12 text-center space-y-3">
-        <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-          <FileEdit className="h-6 w-6" />
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 sm:p-12 text-center space-y-6">
+        <div className="inline-flex items-center justify-center p-4 bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B]">
+          <Sparkles className="h-8 w-8 text-[#1D1D1B]" />
         </div>
-        <h3 className="font-semibold text-slate-800 text-sm">Belum Ada Rekomendasi Revisi</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">
-          Klik tombol &quot;Audit CV & Terjemahkan Pengalaman&quot; untuk mengubah pengalaman organisasi dan proyek kuliahmu menjadi poin pencapaian profesional.
-        </p>
+
+        <div className="max-w-md mx-auto space-y-2">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+            TASK 02 // REVISI PENGALAMAN
+          </span>
+          <h3 className="font-black text-2xl text-[#1D1D1B] tracking-tight">
+            Revisi Pengalaman Kampus
+          </h3>
+          <p className="text-sm text-[#1D1D1B]/80 leading-relaxed font-sans">
+            Ubah pengalaman pasif menjadi poin terukur dengan formula Tindakan + Metode + Dampak.
+          </p>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onActivateSimulation}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>LIHAT CONTOH REVISI</span>
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Hitung total dan sisa placeholder di seluruh rewrites
-  const totalPlaceholders = rewriteData.rewrites.reduce(
-    (sum, item) => sum + countPlaceholders(item.after),
-    0
-  );
+  // 4. Hitung total dan unfilled placeholders
+  let totalPlaceholders = 0;
+  let unfilledPlaceholders = 0;
 
-  const totalUnfilled = rewriteData.rewrites.reduce(
-    (sum, item) => sum + countUnfilledPlaceholders(item.after, placeholderValues, item.id),
-    0
-  );
+  rewriteData.rewrites.forEach((item, itemIdx) => {
+    totalPlaceholders += countPlaceholders(item.after);
+    unfilledPlaceholders += countUnfilledPlaceholders(
+      item.after,
+      placeholderValues,
+      `rw_${item.id || itemIdx}`
+    );
+  });
+
+  const renderInteractiveText = (text: string, contextId: string) => {
+    const parts = splitPlaceholders(text);
+    let phIdx = 0;
+
+    return parts.map((part, idx) => {
+      if (part.isPlaceholder) {
+        const specificKey = `${contextId}_${phIdx}`;
+        const currentVal =
+          placeholderValues[specificKey] !== undefined
+            ? placeholderValues[specificKey]
+            : placeholderValues[part.text] || "";
+
+        const hint = part.hint || part.text;
+        phIdx++;
+
+        return (
+          <span key={idx} className="inline-flex items-baseline mx-1 align-baseline">
+            <input
+              type="text"
+              value={currentVal}
+              onChange={(e) => {
+                if (onPlaceholderChange) {
+                  onPlaceholderChange(specificKey, e.target.value, part.text);
+                }
+              }}
+              placeholder={hint}
+              title={`Isi data nyata: ${part.text}`}
+              className="bg-[#EFE84A] text-[#1D1D1B] font-mono font-bold text-xs px-2 py-0.5 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] placeholder:text-[#1D1D1B]/60 focus:bg-white focus:outline-none focus:ring-0 transition"
+              style={{
+                width: `${Math.max(currentVal.length, hint.length, 4) + 3}ch`,
+                minWidth: "70px",
+              }}
+            />
+          </span>
+        );
+      }
+      return <span key={idx}>{part.text}</span>;
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -229,44 +286,21 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
         }`}
       >
         <div className="flex items-center gap-3">
-          <span
-            className={`p-2 rounded-xl ${
-              totalUnfilled === 0 && totalPlaceholders > 0
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-amber-100 text-amber-800"
-            }`}
-          >
-            {totalUnfilled === 0 && totalPlaceholders > 0 ? (
-              <CheckCircle2 className="h-5 w-5" />
-            ) : (
+          <span className="p-1.5 bg-[#1D1D1B] text-[#EFE84A] border border-[#1D1D1B]">
+            {unfilledPlaceholders > 0 ? (
               <AlertTriangle className="h-5 w-5" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5" />
             )}
           </span>
           <div>
-            <div className="flex items-center gap-2">
-              <h4
-                className={`text-xs font-bold uppercase tracking-wide ${
-                  totalUnfilled === 0 && totalPlaceholders > 0
-                    ? "text-emerald-900"
-                    : "text-amber-900"
-                }`}
-              >
-                Prinsip Anti-Halusinasi & Input Langsung
-              </h4>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-white/80 px-2 py-0.5 rounded-full border border-slate-200 text-indigo-700">
-                <Edit3 className="h-3 w-3" /> Bisa Diisi Langsung
-              </span>
-            </div>
-            <p
-              className={`text-xs sm:text-sm mt-0.5 ${
-                totalUnfilled === 0 && totalPlaceholders > 0
-                  ? "text-emerald-800"
-                  : "text-amber-800"
-              }`}
-            >
-              {totalUnfilled === 0 && totalPlaceholders > 0 ? (
+            <span className="font-mono text-xs font-black uppercase tracking-wider block">
+              STATUS PLACEHOLDER //
+            </span>
+            <p className="font-mono text-xs sm:text-sm font-bold">
+              {unfilledPlaceholders > 0 ? (
                 <>
-                  Semua <strong className="font-bold">{totalPlaceholders} placeholder</strong> telah terisi data riil! Angka otomatis tersinkronisasi ke tab Cetak CV.
+                  <span className="underline decoration-2">{unfilledPlaceholders} DARI {totalPlaceholders}</span> PERLU DATA NYATA
                 </>
               ) : (
                 <>
@@ -280,13 +314,22 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
             </p>
           </div>
         </div>
+
+        <span className="font-mono text-xs font-bold text-[#1D1D1B]/70 sm:text-right">
+          Ketik langsung di kotak kuning.
+        </span>
       </div>
 
-      {/* Daftar Kartu Rewrite */}
-      <div className="space-y-5">
-        {rewriteData.rewrites.map((item, idx) => {
-          const parts = splitPlaceholders(item.after);
-          const resolvedSentence = resolveTextPlaceholders(item.after, placeholderValues, item.id);
+      {/* 2. Transformation Cards */}
+      <div className="space-y-6">
+        {rewriteData.rewrites.map((item, index) => {
+          const contextId = `rw_${item.id || index}`;
+          const resolvedSentence = resolveTextPlaceholders(
+            item.after,
+            placeholderValues,
+            contextId
+          );
+          const isCopied = copiedId === (item.id || String(index));
 
           // Penjaga Kenaikan Jabatan (Spesifikasi 3.5.1)
           const unjustifiedTitles = detectTitleInflation(
@@ -296,38 +339,35 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
 
           return (
             <div
-              key={item.id || idx}
-              className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition overflow-hidden"
+              key={item.id || index}
+              className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-5 sm:p-6 space-y-4"
             >
-              {/* Header Kartu */}
-              <div className="bg-slate-50/80 px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white border border-slate-200 text-indigo-700 shadow-2xs">
+              {/* Header Strip */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1D1D1B] pb-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="bg-[#1E40AF] text-[#F4F1EA] font-mono text-xs font-bold px-3 py-1 rounded-full border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] uppercase">
                     {item.category}
                   </span>
-                  <span className="text-xs font-semibold text-slate-700">
+                  <span className="font-black text-sm sm:text-base text-[#1D1D1B]">
                     {item.roleContext}
                   </span>
                 </div>
+
+                {/* Tactile Copy Button */}
                 <button
                   type="button"
-                  onClick={() => handleCopy(item.id, resolvedSentence)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border transition cursor-pointer ${
-                    copiedId === item.id
-                      ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                  }`}
-                  title="Salin kalimat lengkap dengan data yang sudah kamu isi"
+                  onClick={() => handleCopy(item.id || String(index), resolvedSentence)}
+                  className="bg-white hover:bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase px-3.5 py-1.5 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all duration-100 flex items-center gap-1.5 cursor-pointer ml-auto"
                 >
-                  {copiedId === item.id ? (
+                  {isCopied ? (
                     <>
-                      <Check className="h-3.5 w-3.5" />
-                      <span>Tersalin!</span>
+                      <Check className="h-3.5 w-3.5 text-[#2ED47A] stroke-[3]" />
+                      <span>TERSALIN!</span>
                     </>
                   ) : (
                     <>
                       <Copy className="h-3.5 w-3.5" />
-                      <span>Salin Kalimat</span>
+                      <span>SALIN</span>
                     </>
                   )}
                 </button>
@@ -381,38 +421,24 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                           const isFilled = currentVal.trim().length > 0;
                           const hintText = p.hint || (language === "en" ? "fill number" : "isi angka");
 
-                          return (
-                            <span
-                              key={pIdx}
-                              className="inline-flex items-center align-baseline mx-0.5 relative group"
-                            >
-                              <input
-                                type="text"
-                                value={currentVal}
-                                onChange={(e) => {
-                                  if (onPlaceholderChange) {
-                                    onPlaceholderChange(specificKey, e.target.value, p.text);
-                                  }
-                                }}
-                                placeholder={hintText}
-                                title={`Ketik data riil untuk: ${p.text}`}
-                                className={`px-2 py-0.5 rounded text-xs transition-all outline-none font-sans ${
-                                  isFilled
-                                    ? "bg-emerald-100 text-emerald-950 font-bold border border-emerald-400 shadow-2xs focus:ring-2 focus:ring-emerald-400 focus:bg-white"
-                                    : "bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 placeholder:text-amber-800/60 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200"
-                                }`}
-                                style={{
-                                  width: `${Math.max(currentVal.length, hintText.length, 3) + 2.5}ch`,
-                                  minWidth: "70px",
-                                }}
-                              />
-                            </span>
-                          );
-                        }
-                        return <span key={pIdx}>{p.text}</span>;
-                      })}
-                    </div>
+              {/* Footer Info */}
+              <div className="space-y-2 pt-2 border-t-2 border-[#1D1D1B]">
+                {item.keywordsAdded && item.keywordsAdded.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-xs font-bold uppercase text-[#1D1D1B] flex items-center gap-1">
+                      <Tag className="h-3.5 w-3.5 text-[#1D1D1B]" />
+                      KATA KUNCI:
+                    </span>
+                    {item.keywordsAdded.map((kw, kwIdx) => (
+                      <span
+                        key={kwIdx}
+                        className="bg-[#2ED47A] text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2.5 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]"
+                      >
+                        {kw}
+                      </span>
+                    ))}
                   </div>
+                )}
 
                   {/* Kata Kunci yang Ditambahkan, Alasan, dan Catatan Terjemahan */}
                   <div className="pt-2 border-t border-indigo-100/70 space-y-1.5">
@@ -442,7 +468,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                       </p>
                     )}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           );

@@ -114,7 +114,7 @@ async function main() {
       { role: "user", content: "Ping" },
     ],
     temperature: 0.1,
-    max_tokens: 30,
+    max_tokens: 500,
     response_format: { type: "json_object" },
   };
 

@@ -54,23 +54,26 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   if (error) {
     return (
-      <div className="bg-white rounded-2xl border border-rose-200 p-8 text-center space-y-4 shadow-xs">
-        <h3 className="font-bold text-slate-900 text-base">Gagal Memformat CV Bersih</h3>
-        <p className="text-sm text-slate-600">{error}</p>
+      <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 text-center space-y-4">
+        <h3 className="font-mono text-base font-black uppercase tracking-wider">
+          [!] GAGAL MEMFORMAT CV
+        </h3>
+        <p className="font-sans text-sm max-w-lg mx-auto">{error}</p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <button
             type="button"
             onClick={onRetry}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Coba Lagi
+            <RotateCcw className="h-4 w-4" />
+            COBA LAGI
           </button>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Tampilkan Hasil Simulasi
+            LIHAT SIMULASI
           </button>
         </div>
       </div>
@@ -79,103 +82,109 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 space-y-6 animate-pulse">
-        <div className="h-8 w-48 bg-slate-100 rounded mx-auto"></div>
-        <div className="h-4 w-64 bg-slate-100 rounded mx-auto"></div>
-        <div className="h-20 bg-slate-100 rounded"></div>
-        <div className="h-32 bg-slate-100 rounded"></div>
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-[#F4F1EA] mx-auto border border-[#1D1D1B]"></div>
+        <div className="h-4 w-64 bg-[#F4F1EA] mx-auto border border-[#1D1D1B]"></div>
+        <div className="h-24 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
+        <div className="h-36 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
       </div>
     );
   }
 
   if (!cleanCv) {
     return (
-      <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-12 text-center space-y-3">
-        <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-          <FileText className="h-6 w-6" />
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 sm:p-12 text-center space-y-6">
+        <div className="inline-flex items-center justify-center p-4 bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B]">
+          <Printer className="h-8 w-8 text-[#1D1D1B]" />
         </div>
-        <h3 className="font-semibold text-slate-800 text-sm">Belum Ada Draf CV Bersih</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">
-          CV terstruktur 1 kolom standar Harvard/ATS akan dibuat secara otomatis begitu task penulisan ulang selesai.
-        </p>
+
+        <div className="max-w-md mx-auto space-y-2">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+            OUTPUT // FORMAT ATS
+          </span>
+          <h3 className="font-black text-2xl text-[#1D1D1B] tracking-tight">
+            Draf CV Standar ATS
+          </h3>
+          <p className="text-sm text-[#1D1D1B]/80 leading-relaxed font-sans">
+            CV 1 kolom siap cetak yang sinkron dengan data revisi.
+          </p>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onActivateSimulation}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+          >
+            <Printer className="h-4 w-4" />
+            <span>LIHAT CONTOH CV</span>
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Count remaining unfilled placeholders in cleanCv
+  // Hitung placeholder pada seluruh bagian cleanCv
   let totalPlaceholders = 0;
   let unfilledCount = 0;
 
-  const countSection = (text?: string, contextKey?: string) => {
+  const countSection = (text?: string | null, contextId?: string) => {
     if (!text) return;
     totalPlaceholders += countPlaceholders(text);
-    unfilledCount += countUnfilledPlaceholders(text, placeholderValues, contextKey);
+    unfilledCount += countUnfilledPlaceholders(text, placeholderValues, contextId);
   };
 
-  countSection(cleanCv.fullName, "name");
-  countSection(cleanCv.headline, "headline");
-  countSection(cleanCv.summary, "summary");
-  countSection(cleanCv.education, "education");
-  cleanCv.skills?.forEach((sk, i) => countSection(sk, `skill_${i}`));
+  countSection(cleanCv.fullName, "cv_name");
+  countSection(cleanCv.headline, "cv_headline");
+  countSection(cleanCv.summary, "cv_summary");
+  countSection(cleanCv.education, "cv_education");
+  cleanCv.skills?.forEach((s, idx) => countSection(s, `cv_skill_${idx}`));
   cleanCv.experiences?.forEach((exp, expIdx) => {
-    countSection(exp.title, `exp_${expIdx}_title`);
-    countSection(exp.organization, `exp_${expIdx}_org`);
-    countSection(exp.period, `exp_${expIdx}_period`);
-    exp.bullets?.forEach((b, bIdx) => countSection(b, `exp_${expIdx}_b_${bIdx}`));
+    countSection(exp.title, `cv_exp_${expIdx}_title`);
+    countSection(exp.organization, `cv_exp_${expIdx}_org`);
+    countSection(exp.period, `cv_exp_${expIdx}_period`);
+    exp.bullets?.forEach((b, bIdx) => countSection(b, `cv_exp_${expIdx}_b_${bIdx}`));
   });
 
-  const renderWithPlaceholders = (text?: string, contextKey?: string) => {
+  const renderWithPlaceholders = (text?: string | null, contextId?: string) => {
     if (!text) return null;
     const parts = splitPlaceholders(text);
+    let phIdx = 0;
 
     return parts.map((p, idx) => {
       if (p.isPlaceholder) {
-        const specificKey = contextKey ? `${contextKey}_${p.placeholderIndex ?? 0}` : "";
+        const specificKey = contextId ? `${contextId}_${phIdx}` : "";
         const filledVal =
           (specificKey && placeholderValues[specificKey]) ||
           placeholderValues[p.text] ||
           "";
+
         const isFilled = filledVal.trim().length > 0;
         const hint = p.hint || (isEn ? "fill" : "isi");
 
         return (
-          <span key={idx} className="inline-block">
-            {/* Screen View: Interactive or styled span */}
-            <span className="no-print">
-              {isFilled ? (
-                <span
-                  title="Klik untuk mengubah nilai"
-                  onClick={() => {
-                    const newVal = prompt(`Ubah nilai untuk ${p.text}:`, filledVal);
-                    if (newVal !== null && onPlaceholderChange) {
-                      onPlaceholderChange(specificKey || p.text, newVal, p.text);
-                    }
-                  }}
-                  className="font-bold text-slate-900 bg-emerald-100/70 hover:bg-emerald-200 border border-emerald-300 px-1.5 py-0.5 rounded cursor-pointer transition"
-                >
-                  {filledVal}
-                </span>
-              ) : (
-                <input
-                  type="text"
-                  value={filledVal}
-                  onChange={(e) => {
-                    if (onPlaceholderChange) {
-                      onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
-                    }
-                  }}
-                  placeholder={hint}
-                  title={`Ketik langsung data riil untuk: ${p.text}`}
-                  className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-1.5 py-0.5 rounded text-xs outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white"
-                  style={{
-                    width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
-                    minWidth: "60px",
-                  }}
-                />
-              )}
+          <span key={idx} className="inline align-baseline">
+            {/* Screen View */}
+            <span className="print:hidden inline-flex items-baseline mx-0.5">
+              <input
+                type="text"
+                value={filledVal}
+                onChange={(e) => {
+                  if (onPlaceholderChange) {
+                    onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
+                  }
+                }}
+                placeholder={hint}
+                title={`Ketik data riil: ${p.text}`}
+                className="bg-[#EFE84A] text-[#1D1D1B] font-mono font-bold text-xs px-1.5 py-0.5 border border-[#1D1D1B] shadow-[1px_1px_0px_#1D1D1B] placeholder:text-[#1D1D1B]/60 focus:bg-white focus:outline-none focus:ring-0 transition"
+                style={{
+                  width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
+                  minWidth: "60px",
+                }}
+              />
             </span>
 
-            {/* Print View: 100% Clean plain text (no borders, no backgrounds) */}
+            {/* Print View */}
             <span className="hidden print:inline font-normal text-black">
               {isFilled ? filledVal : p.text}
             </span>
@@ -222,10 +231,10 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
       <div className="no-print bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span
-            className={`p-2 rounded-xl ${
+            className={`p-2 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] ${
               unfilledCount === 0 && totalPlaceholders > 0
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-amber-100 text-amber-800"
+                ? "bg-[#2ED47A] text-[#1D1D1B]"
+                : "bg-[#EFE84A] text-[#1D1D1B]"
             }`}
           >
             {unfilledCount === 0 && totalPlaceholders > 0 ? (
@@ -235,30 +244,31 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
             )}
           </span>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase">
+            <h4 className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
               {unfilledCount === 0 && totalPlaceholders > 0
-                ? "Dokumen CV Siap Dicetak"
-                : "Peringatan Sebelum Mencetak"}
+                ? "SIAP DICETAK"
+                : "PERIKSA PLACEHOLDER //"}
             </h4>
-            <p className="text-xs text-slate-600">
+            <p className="font-sans text-xs text-[#1D1D1B]/80 mt-0.5 leading-relaxed">
               {unfilledCount > 0 ? (
                 <>
-                  Tersisa <strong className="text-amber-700">{unfilledCount} placeholder</strong>. Angka yang kamu isi di tab Penulisan Ulang otomatis masuk ke sini, atau kamu bisa mengisinya langsung pada kotak kuning di bawah.
+                  Tersisa <strong className="font-mono font-bold text-[#F34E34]">{unfilledCount} placeholder</strong> kosong.
                 </>
               ) : (
-                "Seluruh bagian sudah lengkap dengan data riil dan siap dicetak atau disimpan ke PDF."
+                "Semua data lengkap dan siap dicetak."
               )}
             </p>
           </div>
         </div>
 
+        {/* CTA Button */}
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-black uppercase tracking-wider border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1D1D1B] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100 cursor-pointer shrink-0"
         >
           <Printer className="h-4 w-4" />
-          Cetak / Simpan PDF
+          <span>CETAK PDF</span>
         </button>
       </div>
 
@@ -277,19 +287,19 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
             {renderWithPlaceholders(cleanCv.headline, "headline")}
           </p>
 
-          {/* Kontak dari ekstraksi lokal di browser */}
-          <div className="text-xs text-slate-600 pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1 print:text-black">
-            {contactItems.length > 0 ? (
-              contactItems.map((c, i) => (
-                <span key={i} className="inline-block">
-                  {c} {i < contactItems.length - 1 && "•"}
-                </span>
-              ))
-            ) : (
-              <span className="italic text-slate-400">[kontak dari draf awal]</span>
-            )}
+            {/* Kontak */}
+            <div className="text-xs text-black pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1">
+              {contactItems.length > 0 ? (
+                contactItems.map((c, i) => (
+                  <span key={i} className="inline-block">
+                    {c} {i < contactItems.length - 1 && "•"}
+                  </span>
+                ))
+              ) : (
+                <span className="italic text-gray-500">[kontak dari draf awal]</span>
+              )}
+            </div>
           </div>
-        </div>
 
         {/* Ringkasan Profil / Summary */}
         {cleanCv.summary && (
@@ -335,18 +345,10 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
                   <div className="text-xs font-semibold text-slate-700 print:text-black">
                     {renderWithPlaceholders(exp.organization, `exp_${expIdx}_org`)}
                   </div>
-                  <ul className="list-disc list-outside pl-4 space-y-1 pt-1 text-xs sm:text-sm text-slate-800 print:text-black">
-                    {(exp.bullets || []).map((bullet, bIdx) => (
-                      <li key={bIdx} className="leading-relaxed">
-                        {renderWithPlaceholders(bullet, `exp_${expIdx}_b_${bIdx}`)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Keahlian & Keterampilan / Skills */}
         {cleanCv.skills && cleanCv.skills.length > 0 && (
