@@ -123,8 +123,8 @@ export default function Home() {
         newlyCovered: [],
       };
     }
-    return computeScores(result.score, cvText, result.rewrite);
-  }, [result.score, result.rewrite, cvText]);
+    return computeScores(result.score, cvText, result.rewrite, placeholderValues);
+  }, [result.score, result.rewrite, cvText, placeholderValues]);
 
   // Helper to run a single task via API
   const runSingleTask = useCallback(

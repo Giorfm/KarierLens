@@ -4,15 +4,22 @@ import type {
   ComputedScores,
   ReadinessStatus,
 } from "@/types/karierlens";
+import { resolveTextPlaceholders } from "@/lib/placeholders";
 
 export function normalizeText(s: string): string {
-  return s.toLowerCase().replace(/\s+/g, " ").trim();
+  return s
+    .toLowerCase()
+    .replace(/[/\\_-]+/g, " ")
+    .replace(/[^\w\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function computeScores(
   score: ScoreResult,
   cvText: string,
-  rewrite?: RewriteResult
+  rewrite?: RewriteResult,
+  placeholderValues?: Record<string, string>
 ): ComputedScores {
   const keywords = score?.jdKeywords ?? [];
 
@@ -72,19 +79,48 @@ export function computeScores(
   const newlyCovered: string[] = [];
 
   if (rewrite) {
-    const afterTexts = (rewrite.rewrites || []).map((r) => r.after || "");
+    const afterTexts = (rewrite.rewrites || []).map((r) =>
+      resolveTextPlaceholders(r.after || "", placeholderValues, r.id)
+    );
+    const addedKeywords = (rewrite.rewrites || []).flatMap((r) => r.keywordsAdded || []);
     const cleanCvTexts: string[] = [
-      rewrite.cleanCv?.headline || "",
-      rewrite.cleanCv?.summary || "",
-      ...(rewrite.cleanCv?.skills || []),
-      ...(rewrite.cleanCv?.experiences || []).flatMap((exp) => exp.bullets || []),
+      resolveTextPlaceholders(rewrite.cleanCv?.headline || "", placeholderValues, "headline"),
+      resolveTextPlaceholders(rewrite.cleanCv?.summary || "", placeholderValues, "summary"),
+      ...(rewrite.cleanCv?.skills || []).map((sk) =>
+        resolveTextPlaceholders(sk, placeholderValues)
+      ),
+      ...(rewrite.cleanCv?.experiences || []).flatMap((exp) =>
+        (exp.bullets || []).map((b) => resolveTextPlaceholders(b, placeholderValues))
+      ),
     ];
 
-    const allRewriteText = normalizeText([...afterTexts, ...cleanCvTexts].join(" "));
+    const allRewriteText = normalizeText(
+      [...afterTexts, ...addedKeywords, ...cleanCvTexts].join(" ")
+    );
+    const normalizedAddedKeywords = addedKeywords.map((k) => normalizeText(k));
 
     for (const item of missingKeywords) {
       const kwNorm = normalizeText(item.keyword);
-      if (kwNorm.length > 0 && allRewriteText.includes(kwNorm)) {
+      if (!kwNorm) continue;
+
+      // a. Cocok exact/substring di teks revisi atau array keywordsAdded
+      const inText = allRewriteText.includes(kwNorm);
+      const inAdded = normalizedAddedKeywords.some(
+        (ak) =>
+          ak === kwNorm ||
+          (ak.length > 3 && (ak.includes(kwNorm) || kwNorm.includes(ak)))
+      );
+
+      // b. Multi-word stem matching (misal: "bug identification" -> "bug" & "identif" di teks)
+      const words = kwNorm.split(" ").filter((w) => w.length >= 3);
+      const wordsMatch =
+        words.length >= 2 &&
+        words.every((w) => {
+          const root = w.slice(0, Math.min(w.length, 6));
+          return allRewriteText.includes(root);
+        });
+
+      if (inText || inAdded || wordsMatch) {
         newlyCovered.push(item.keyword);
       }
     }
