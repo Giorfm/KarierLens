@@ -1,9 +1,13 @@
 "use client";
 
 import React from "react";
-import { Printer, AlertTriangle, FileText } from "lucide-react";
+import { Printer, AlertTriangle, FileText, CheckCircle2 } from "lucide-react";
 import type { CleanCvSection } from "@/types/karierlens";
-import { countPlaceholders, splitPlaceholders } from "@/lib/placeholders";
+import {
+  countPlaceholders,
+  countUnfilledPlaceholders,
+  splitPlaceholders,
+} from "@/lib/placeholders";
 
 interface PrintCvTabProps {
   cleanCv?: CleanCvSection;
@@ -16,6 +20,8 @@ interface PrintCvTabProps {
   error?: string | null;
   onRetry: () => void;
   onActivateSimulation: () => void;
+  placeholderValues?: Record<string, string>;
+  onPlaceholderChange?: (key: string, value: string, originalPlaceholder: string) => void;
 }
 
 export const PrintCvTab: React.FC<PrintCvTabProps> = ({
@@ -25,6 +31,8 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   error,
   onRetry,
   onActivateSimulation,
+  placeholderValues = {},
+  onPlaceholderChange,
 }) => {
   if (error) {
     return (
@@ -76,39 +84,88 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
     );
   }
 
-  // Count total placeholders in cleanCv
+  // Count remaining unfilled placeholders in cleanCv
   let totalPlaceholders = 0;
-  totalPlaceholders += countPlaceholders(cleanCv.fullName);
-  totalPlaceholders += countPlaceholders(cleanCv.headline);
-  totalPlaceholders += countPlaceholders(cleanCv.summary);
-  totalPlaceholders += countPlaceholders(cleanCv.education);
-  for (const sk of cleanCv.skills || []) {
-    totalPlaceholders += countPlaceholders(sk);
-  }
-  for (const exp of cleanCv.experiences || []) {
-    totalPlaceholders += countPlaceholders(exp.title);
-    totalPlaceholders += countPlaceholders(exp.organization);
-    totalPlaceholders += countPlaceholders(exp.period);
-    for (const b of exp.bullets || []) {
-      totalPlaceholders += countPlaceholders(b);
-    }
-  }
+  let unfilledCount = 0;
 
-  const renderWithPlaceholders = (text?: string) => {
+  const countSection = (text?: string, contextKey?: string) => {
+    if (!text) return;
+    totalPlaceholders += countPlaceholders(text);
+    unfilledCount += countUnfilledPlaceholders(text, placeholderValues, contextKey);
+  };
+
+  countSection(cleanCv.fullName, "name");
+  countSection(cleanCv.headline, "headline");
+  countSection(cleanCv.summary, "summary");
+  countSection(cleanCv.education, "education");
+  cleanCv.skills?.forEach((sk, i) => countSection(sk, `skill_${i}`));
+  cleanCv.experiences?.forEach((exp, expIdx) => {
+    countSection(exp.title, `exp_${expIdx}_title`);
+    countSection(exp.organization, `exp_${expIdx}_org`);
+    countSection(exp.period, `exp_${expIdx}_period`);
+    exp.bullets?.forEach((b, bIdx) => countSection(b, `exp_${expIdx}_b_${bIdx}`));
+  });
+
+  const renderWithPlaceholders = (text?: string, contextKey?: string) => {
     if (!text) return null;
     const parts = splitPlaceholders(text);
-    return parts.map((p, idx) =>
-      p.isPlaceholder ? (
-        <span
-          key={idx}
-          className="bg-amber-100 text-amber-900 font-mono font-medium px-1 rounded border border-amber-200 print:bg-transparent print:text-black print:p-0 print:border-0 print:font-sans"
-        >
-          {p.text}
-        </span>
-      ) : (
-        <span key={idx}>{p.text}</span>
-      )
-    );
+
+    return parts.map((p, idx) => {
+      if (p.isPlaceholder) {
+        const specificKey = contextKey ? `${contextKey}_${p.placeholderIndex ?? 0}` : "";
+        const filledVal =
+          (specificKey && placeholderValues[specificKey]) ||
+          placeholderValues[p.text] ||
+          "";
+        const isFilled = filledVal.trim().length > 0;
+        const hint = p.hint || "isi";
+
+        return (
+          <span key={idx} className="inline-block">
+            {/* Screen View: Interactive or styled span */}
+            <span className="no-print">
+              {isFilled ? (
+                <span
+                  title="Klik untuk mengubah nilai"
+                  onClick={() => {
+                    const newVal = prompt(`Ubah nilai untuk ${p.text}:`, filledVal);
+                    if (newVal !== null && onPlaceholderChange) {
+                      onPlaceholderChange(specificKey || p.text, newVal, p.text);
+                    }
+                  }}
+                  className="font-bold text-slate-900 bg-emerald-100/70 hover:bg-emerald-200 border border-emerald-300 px-1.5 py-0.5 rounded cursor-pointer transition"
+                >
+                  {filledVal}
+                </span>
+              ) : (
+                <input
+                  type="text"
+                  value={filledVal}
+                  onChange={(e) => {
+                    if (onPlaceholderChange) {
+                      onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
+                    }
+                  }}
+                  placeholder={hint}
+                  title={`Ketik langsung data riil untuk: ${p.text}`}
+                  className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-1.5 py-0.5 rounded text-xs outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white"
+                  style={{
+                    width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
+                    minWidth: "60px",
+                  }}
+                />
+              )}
+            </span>
+
+            {/* Print View: 100% Clean plain text (no borders, no backgrounds) */}
+            <span className="hidden print:inline font-normal text-black">
+              {isFilled ? filledVal : p.text}
+            </span>
+          </span>
+        );
+      }
+      return <span key={idx}>{p.text}</span>;
+    });
   };
 
   const contactItems: string[] = [];
@@ -121,20 +178,32 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
       {/* Action & Warning Bar */}
       <div className="no-print bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className="p-2 rounded-xl bg-amber-100 text-amber-800">
-            <AlertTriangle className="h-5 w-5" />
+          <span
+            className={`p-2 rounded-xl ${
+              unfilledCount === 0 && totalPlaceholders > 0
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-amber-100 text-amber-800"
+            }`}
+          >
+            {unfilledCount === 0 && totalPlaceholders > 0 ? (
+              <CheckCircle2 className="h-5 w-5" />
+            ) : (
+              <AlertTriangle className="h-5 w-5" />
+            )}
           </span>
           <div>
             <h4 className="text-xs font-bold text-slate-900 uppercase">
-              Peringatan Sebelum Mencetak
+              {unfilledCount === 0 && totalPlaceholders > 0
+                ? "Dokumen CV Siap Dicetak"
+                : "Peringatan Sebelum Mencetak"}
             </h4>
             <p className="text-xs text-slate-600">
-              {totalPlaceholders > 0 ? (
+              {unfilledCount > 0 ? (
                 <>
-                  Lengkapi <strong className="text-amber-700">{totalPlaceholders} placeholder</strong> dengan data riil kamu sebelum mengirim CV ini.
+                  Tersisa <strong className="text-amber-700">{unfilledCount} placeholder</strong>. Angka yang kamu isi di tab Penulisan Ulang otomatis masuk ke sini, atau kamu bisa mengisinya langsung pada kotak kuning di bawah.
                 </>
               ) : (
-                "Seluruh bagian sudah lengkap dan siap dicetak atau disimpan ke PDF."
+                "Seluruh bagian sudah lengkap dengan data riil dan siap dicetak atau disimpan ke PDF."
               )}
             </p>
           </div>
@@ -153,19 +222,19 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
       {/* Dokumen CV 1 Kolom Format Harvard/ATS */}
       <div
         id="print-area"
-        className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6"
+        className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0"
       >
         {/* Header Nama & Kontak */}
-        <div className="text-center border-b border-slate-300 pb-5 space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 uppercase">
-            {renderWithPlaceholders(cleanCv.fullName)}
+        <div className="text-center border-b border-slate-300 pb-5 space-y-1.5 print:border-black">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 uppercase print:text-black">
+            {renderWithPlaceholders(cleanCv.fullName, "name")}
           </h1>
-          <p className="text-xs sm:text-sm font-semibold text-slate-700">
-            {renderWithPlaceholders(cleanCv.headline)}
+          <p className="text-xs sm:text-sm font-semibold text-slate-700 print:text-black">
+            {renderWithPlaceholders(cleanCv.headline, "headline")}
           </p>
 
           {/* Kontak dari ekstraksi lokal di browser */}
-          <div className="text-xs text-slate-600 pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1">
+          <div className="text-xs text-slate-600 pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1 print:text-black">
             {contactItems.length > 0 ? (
               contactItems.map((c, i) => (
                 <span key={i} className="inline-block">
@@ -181,11 +250,11 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         {/* Ringkasan Profil */}
         {cleanCv.summary && (
           <div className="space-y-1">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
               Ringkasan Profesional
             </h2>
-            <p className="text-xs sm:text-sm leading-relaxed text-slate-800 pt-1">
-              {renderWithPlaceholders(cleanCv.summary)}
+            <p className="text-xs sm:text-sm leading-relaxed text-slate-800 pt-1 print:text-black">
+              {renderWithPlaceholders(cleanCv.summary, "summary")}
             </p>
           </div>
         )}
@@ -193,11 +262,11 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         {/* Pendidikan */}
         {cleanCv.education && (
           <div className="space-y-1">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
               Pendidikan
             </h2>
-            <p className="text-xs sm:text-sm text-slate-800 pt-1 font-medium">
-              {renderWithPlaceholders(cleanCv.education)}
+            <p className="text-xs sm:text-sm text-slate-800 pt-1 font-medium print:text-black">
+              {renderWithPlaceholders(cleanCv.education, "education")}
             </p>
           </div>
         )}
@@ -205,27 +274,27 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         {/* Pengalaman */}
         {cleanCv.experiences && cleanCv.experiences.length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
               Pengalaman Organisasi & Proyek
             </h2>
             <div className="space-y-4 pt-1">
               {cleanCv.experiences.map((exp, expIdx) => (
                 <div key={expIdx} className="space-y-1">
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-xs sm:text-sm">
-                    <span className="font-bold text-slate-900">
-                      {renderWithPlaceholders(exp.title)}
+                    <span className="font-bold text-slate-900 print:text-black">
+                      {renderWithPlaceholders(exp.title, `exp_${expIdx}_title`)}
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">
-                      {renderWithPlaceholders(exp.period)}
+                    <span className="text-xs text-slate-500 font-medium print:text-black">
+                      {renderWithPlaceholders(exp.period, `exp_${expIdx}_period`)}
                     </span>
                   </div>
-                  <div className="text-xs font-semibold text-slate-700">
-                    {renderWithPlaceholders(exp.organization)}
+                  <div className="text-xs font-semibold text-slate-700 print:text-black">
+                    {renderWithPlaceholders(exp.organization, `exp_${expIdx}_org`)}
                   </div>
-                  <ul className="list-disc list-outside pl-4 space-y-1 pt-1 text-xs sm:text-sm text-slate-800">
+                  <ul className="list-disc list-outside pl-4 space-y-1 pt-1 text-xs sm:text-sm text-slate-800 print:text-black">
                     {(exp.bullets || []).map((bullet, bIdx) => (
                       <li key={bIdx} className="leading-relaxed">
-                        {renderWithPlaceholders(bullet)}
+                        {renderWithPlaceholders(bullet, `exp_${expIdx}_b_${bIdx}`)}
                       </li>
                     ))}
                   </ul>
@@ -238,13 +307,13 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         {/* Keahlian & Keterampilan */}
         {cleanCv.skills && cleanCv.skills.length > 0 && (
           <div className="space-y-1.5">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
               Keahlian & Kompetensi
             </h2>
-            <p className="text-xs sm:text-sm text-slate-800 pt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-800 pt-1 leading-relaxed print:text-black">
               {cleanCv.skills.map((sk, idx) => (
                 <span key={idx}>
-                  {renderWithPlaceholders(sk)}
+                  {renderWithPlaceholders(sk, `skill_${idx}`)}
                   {idx < cleanCv.skills.length - 1 ? ", " : ""}
                 </span>
               ))}

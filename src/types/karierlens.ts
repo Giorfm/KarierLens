@@ -112,4 +112,5 @@ export interface PersistedSession {
   maskPii: boolean;
   activeTab: "score" | "rewrite" | "interview" | "print";
   liveResult: Partial<AnalysisResult>;   // hanya hasil dari AI sungguhan; hasil simulasi TIDAK disimpan
+  placeholderValues?: Record<string, string>;
 }

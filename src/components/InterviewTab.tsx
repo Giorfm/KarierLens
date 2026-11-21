@@ -17,6 +17,8 @@ interface InterviewTabProps {
   error?: string | null;
   onRetry: () => void;
   onActivateSimulation: () => void;
+  placeholderValues?: Record<string, string>;
+  onPlaceholderChange?: (key: string, value: string, originalPlaceholder: string) => void;
 }
 
 export const InterviewTab: React.FC<InterviewTabProps> = ({
@@ -25,6 +27,8 @@ export const InterviewTab: React.FC<InterviewTabProps> = ({
   error,
   onRetry,
   onActivateSimulation,
+  placeholderValues = {},
+  onPlaceholderChange,
 }) => {
   // 1. Error state
   if (error) {
@@ -97,20 +101,47 @@ export const InterviewTab: React.FC<InterviewTabProps> = ({
     );
   }
 
-  const renderWithPlaceholders = (text: string) => {
+  const renderWithPlaceholders = (text: string, contextKey?: string) => {
     const parts = splitPlaceholders(text);
-    return parts.map((p, idx) =>
-      p.isPlaceholder ? (
-        <span
-          key={idx}
-          className="bg-amber-100 text-amber-900 font-mono font-semibold px-1 py-0.5 rounded text-xs border border-amber-200 shadow-2xs mx-0.5"
-        >
-          {p.text}
-        </span>
-      ) : (
-        <span key={idx}>{p.text}</span>
-      )
-    );
+    return parts.map((p, idx) => {
+      if (p.isPlaceholder) {
+        const specificKey = contextKey ? `${contextKey}_${p.placeholderIndex ?? 0}` : "";
+        const filledVal =
+          (specificKey && placeholderValues[specificKey]) ||
+          placeholderValues[p.text] ||
+          "";
+        const isFilled = filledVal.trim().length > 0;
+        const hint = p.hint || "isi";
+
+        return isFilled ? (
+          <span
+            key={idx}
+            className="bg-emerald-100 text-emerald-950 font-bold px-1.5 py-0.5 rounded text-xs border border-emerald-300 shadow-2xs mx-0.5"
+          >
+            {filledVal}
+          </span>
+        ) : (
+          <input
+            key={idx}
+            type="text"
+            value={filledVal}
+            onChange={(e) => {
+              if (onPlaceholderChange) {
+                onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
+              }
+            }}
+            placeholder={hint}
+            title={`Ketik langsung data riil untuk: ${p.text}`}
+            className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-1.5 py-0.5 rounded text-xs outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white inline-block mx-0.5 font-sans"
+            style={{
+              width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
+              minWidth: "65px",
+            }}
+          />
+        );
+      }
+      return <span key={idx}>{p.text}</span>;
+    });
   };
 
   return (

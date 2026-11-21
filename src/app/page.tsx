@@ -44,6 +44,7 @@ export default function Home() {
 
   // Analysis result states
   const [result, setResult] = useState<Partial<AnalysisResult>>({});
+  const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
   const [taskStatus, setTaskStatus] = useState<Record<TaskName, "idle" | "loading" | "done" | "error">>({
     score: "idle",
     rewrite: "idle",
@@ -72,6 +73,9 @@ export default function Home() {
       setLanguage(saved.language || "id");
       setMaskPiiEnabled(saved.maskPii ?? true);
       setActiveTab(saved.activeTab || "score");
+      if (saved.placeholderValues) {
+        setPlaceholderValues(saved.placeholderValues);
+      }
       if (saved.liveResult && Object.keys(saved.liveResult).length > 0) {
         setResult(saved.liveResult);
         setTaskStatus({
@@ -95,11 +99,12 @@ export default function Home() {
         maskPii: maskPiiEnabled,
         activeTab,
         liveResult: result,
+        placeholderValues,
       });
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [cvText, jobDescription, language, maskPiiEnabled, activeTab, result, mode]);
+  }, [cvText, jobDescription, language, maskPiiEnabled, activeTab, result, placeholderValues, mode]);
 
   // 3. Extract local contacts from original cvText (for PrintCvTab)
   const contacts = useMemo(() => {
@@ -248,11 +253,24 @@ export default function Home() {
     setJobDescription("");
     setMode("live");
     setResult({});
+    setPlaceholderValues({});
     setTaskStatus({ score: "idle", rewrite: "idle", interview: "idle" });
     setTaskErrors({ score: null, rewrite: null, interview: null });
     setGlobalError(null);
     setActiveTab("score");
   };
+
+  // 10. Handle placeholder change (interactive inline inputs)
+  const handlePlaceholderChange = useCallback(
+    (key: string, value: string, originalPlaceholder: string) => {
+      setPlaceholderValues((prev) => ({
+        ...prev,
+        [key]: value,
+        [originalPlaceholder]: value,
+      }));
+    },
+    []
+  );
 
   // 10. PDF parser handler (Tahap 6)
   const handlePdfUpload = async (file: File) => {
@@ -417,6 +435,8 @@ export default function Home() {
               error={taskErrors.rewrite}
               onRetry={() => handleRetryTask("rewrite")}
               onActivateSimulation={handleActivateSimulation}
+              placeholderValues={placeholderValues}
+              onPlaceholderChange={handlePlaceholderChange}
             />
           )}
 
@@ -427,6 +447,8 @@ export default function Home() {
               error={taskErrors.interview}
               onRetry={() => handleRetryTask("interview")}
               onActivateSimulation={handleActivateSimulation}
+              placeholderValues={placeholderValues}
+              onPlaceholderChange={handlePlaceholderChange}
             />
           )}
 
@@ -438,6 +460,8 @@ export default function Home() {
               error={taskErrors.rewrite}
               onRetry={() => handleRetryTask("rewrite")}
               onActivateSimulation={handleActivateSimulation}
+              placeholderValues={placeholderValues}
+              onPlaceholderChange={handlePlaceholderChange}
             />
           )}
         </div>
