@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KarierLens — Penerjemah Pengalaman Kampus ke Bahasa Rekruter",
+  title: "karierlens. — Audit CV Kampus ke Bahasa Rekruter",
   description:
-    "Ubah pengalaman organisasi, kepanitiaan, danus, asisten lab, dan proyek kuliah menjadi poin CV terukur dan relevan dengan Job Description.",
+    "Terjemahkan pengalaman kampus ke bahasa rekruter dengan poin CV terukur dan relevan.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className="min-h-screen bg-[#FAFAFC] text-slate-900 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
+      <body className="min-h-screen bg-[#F4F1EA] text-[#1D1D1B] font-sans antialiased selection:bg-[#EFE84A] selection:text-[#1D1D1B]">
         {children}
       </body>
     </html>

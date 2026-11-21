@@ -3,10 +3,9 @@
 import React from "react";
 import {
   MessageSquare,
-  HelpCircle,
   RotateCcw,
-  AlertCircle,
-  Compass,
+  Sparkles,
+  HelpCircle,
 } from "lucide-react";
 import type { InterviewResult } from "@/types/karierlens";
 import { splitPlaceholders } from "@/lib/placeholders";
@@ -33,29 +32,26 @@ export const InterviewTab: React.FC<InterviewTabProps> = ({
   // 1. Error state
   if (error) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-2xs">
-          <AlertCircle className="h-6 w-6" />
-        </div>
-        <div className="max-w-md mx-auto space-y-1">
-          <h3 className="font-bold text-slate-900 text-base">Gagal Menyiapkan Simulasi Wawancara</h3>
-          <p className="text-sm text-slate-600">{error}</p>
-        </div>
+      <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 text-center space-y-4">
+        <h3 className="font-mono text-base font-black uppercase tracking-wider">
+          [!] GAGAL MEMUAT WAWANCARA
+        </h3>
+        <p className="font-sans text-sm max-w-lg mx-auto">{error}</p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-semibold shadow-xs transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
             <RotateCcw className="h-4 w-4" />
-            Coba Lagi
+            COBA LAGI
           </button>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Tampilkan Hasil Simulasi
+            LIHAT SIMULASI
           </button>
         </div>
       </div>
@@ -65,15 +61,14 @@ export const InterviewTab: React.FC<InterviewTabProps> = ({
   // 2. Loading Skeleton state
   if (isLoading) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 p-8 space-y-6 animate-pulse shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="h-10 w-72 bg-slate-100 rounded-2xl"></div>
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 space-y-6 animate-pulse">
+        <div className="h-8 w-64 bg-[#F4F1EA] border-2 border-[#1D1D1B]"></div>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border border-slate-200/80 rounded-2xl p-5 space-y-4">
-            <div className="h-6 w-3/4 bg-slate-100 rounded-md"></div>
-            <div className="h-4 w-1/2 bg-slate-100 rounded-md"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          <div key={i} className="border-2 border-[#1D1D1B] p-6 space-y-4">
+            <div className="h-6 w-3/4 bg-[#F4F1EA]"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((j) => (
-                <div key={j} className="h-20 bg-slate-100 rounded-xl"></div>
+                <div key={j} className="h-24 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
               ))}
             </div>
           </div>
@@ -89,157 +84,186 @@ export const InterviewTab: React.FC<InterviewTabProps> = ({
     interviewData.interviewQuestions.length === 0
   ) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-2xs">
-          <HelpCircle className="h-6 w-6" />
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 sm:p-12 text-center space-y-6">
+        <div className="inline-flex items-center justify-center p-4 bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B]">
+          <MessageSquare className="h-8 w-8 text-[#1D1D1B]" />
         </div>
-        <h3 className="font-semibold text-slate-900 text-sm">Belum Ada Simulasi Pertanyaan</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-          Klik tombol &quot;Audit CV & Terjemahkan Pengalaman&quot; untuk menyiapkan 5 pertanyaan wawancara behavioral yang membidik celah antara CV dan JD target.
-        </p>
+
+        <div className="max-w-md mx-auto space-y-2">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+            TASK 03 // SIMULASI STAR
+          </span>
+          <h3 className="font-black text-2xl text-[#1D1D1B] tracking-tight">
+            Simulasi Wawancara HRD
+          </h3>
+          <p className="text-sm text-[#1D1D1B]/80 leading-relaxed font-sans">
+            Latihan menjawab 5 pertanyaan perilaku dengan kerangka STAR.
+          </p>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onActivateSimulation}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>LIHAT CONTOH PERTANYAAN</span>
+          </button>
+        </div>
       </div>
     );
   }
 
-  const renderWithPlaceholders = (text: string, contextKey?: string) => {
+  const renderInteractiveText = (text: string, contextId: string) => {
     const parts = splitPlaceholders(text);
-    return parts.map((p, idx) => {
-      if (p.isPlaceholder) {
-        const specificKey = contextKey ? `${contextKey}_${p.placeholderIndex ?? 0}` : "";
-        const filledVal =
-          (specificKey && placeholderValues[specificKey]) ||
-          placeholderValues[p.text] ||
-          "";
-        const isFilled = filledVal.trim().length > 0;
-        const hint = p.hint || "isi";
+    let phIdx = 0;
 
-        return isFilled ? (
-          <span
-            key={idx}
-            className="bg-emerald-100 text-emerald-950 font-bold px-2 py-0.5 rounded-md text-xs border border-emerald-300 shadow-2xs mx-0.5"
-          >
-            {filledVal}
+    return parts.map((part, idx) => {
+      if (part.isPlaceholder) {
+        const specificKey = `${contextId}_${phIdx}`;
+        const currentVal =
+          placeholderValues[specificKey] !== undefined
+            ? placeholderValues[specificKey]
+            : placeholderValues[part.text] || "";
+
+        const hint = part.hint || part.text;
+        phIdx++;
+
+        return (
+          <span key={idx} className="inline-flex items-baseline mx-1 align-baseline">
+            <input
+              type="text"
+              value={currentVal}
+              onChange={(e) => {
+                if (onPlaceholderChange) {
+                  onPlaceholderChange(specificKey, e.target.value, part.text);
+                }
+              }}
+              placeholder={hint}
+              title={`Isi data nyata: ${part.text}`}
+              className="bg-[#EFE84A] text-[#1D1D1B] font-mono font-bold text-xs px-2 py-0.5 border-2 border-[#1D1D1B] shadow-[1px_1px_0px_#1D1D1B] placeholder:text-[#1D1D1B]/60 focus:bg-white focus:outline-none focus:ring-0 transition"
+              style={{
+                width: `${Math.max(currentVal.length, hint.length, 3) + 3}ch`,
+                minWidth: "65px",
+              }}
+            />
           </span>
-        ) : (
-          <input
-            key={idx}
-            type="text"
-            value={filledVal}
-            onChange={(e) => {
-              if (onPlaceholderChange) {
-                onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
-              }
-            }}
-            placeholder={hint}
-            title={`Ketik langsung data riil untuk: ${p.text}`}
-            className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-2 py-0.5 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white inline-block mx-0.5 font-sans"
-            style={{
-              width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
-              minWidth: "65px",
-            }}
-          />
         );
       }
-      return <span key={idx}>{p.text}</span>;
+      return <span key={idx}>{part.text}</span>;
     });
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 shadow-[0_8px_30px_rgb(15,23,42,0.04)] p-6 md:p-8 space-y-6 transition-all">
-      {/* Intro Box */}
-      <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 shadow-2xs">
-        <div className="flex items-center gap-3.5">
-          <span className="p-2.5 rounded-2xl bg-blue-100 text-blue-700 shadow-2xs shrink-0">
-            <Compass className="h-5 w-5" />
+    <div className="space-y-6">
+      {/* Header Info Banner */}
+      <div className="bg-[#1E40AF] text-[#F4F1EA] border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="p-1.5 bg-[#EFE84A] text-[#1D1D1B] border border-[#1D1D1B]">
+            <HelpCircle className="h-5 w-5" />
           </span>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-              Persiapan Wawancara Behavioral (Metode STAR)
-            </h4>
-            <p className="text-xs sm:text-sm text-slate-600 mt-0.5 leading-relaxed">
-              5 pertanyaan tajam yang paling mungkin ditanyakan rekruter mengenai kesenjangan pengalamanmu, lengkap dengan panduan jawaban jujur berbasis pengalaman nyata.
+            <span className="font-mono text-xs font-black uppercase tracking-wider text-[#EFE84A] block">
+              SIMULASI STAR //
+            </span>
+            <p className="font-mono text-xs sm:text-sm font-bold">
+              5 PERTANYAAN UTAMA BERDASARKAN PENGALAMANMU
             </p>
           </div>
         </div>
+        <span className="font-mono text-xs text-[#F4F1EA]/80">
+          Gunakan metode STAR saat wawancara.
+        </span>
       </div>
 
-      {/* 5 Kartu Pertanyaan */}
-      <div className="space-y-5">
-        {interviewData.interviewQuestions.map((q, idx) => {
+      {/* 5 Cards */}
+      <div className="space-y-6">
+        {interviewData.interviewQuestions.map((q, index) => {
+          const qId = q.id || `q${index + 1}`;
+
           return (
             <div
-              key={q.id || idx}
-              className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs space-y-4 hover:border-slate-300 hover:shadow-sm transition-all"
+              key={qId}
+              className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-5 sm:p-6 space-y-5"
             >
-              {/* Nomor & Pertanyaan */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-xs shadow-2xs">
-                    {idx + 1}
+              {/* Question Header */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1D1D1B] pb-3">
+                <div className="flex items-center gap-3">
+                  <span className="bg-[#1D1D1B] text-[#EFE84A] font-mono font-black text-sm px-3 py-1 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B]">
+                    Q{index + 1}
                   </span>
-                  <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                    Pertanyaan Wawancara Rekruter
+                  <span className="bg-[#1E40AF] text-[#F4F1EA] font-mono text-xs font-bold px-3 py-1 rounded-full border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] uppercase">
+                    FOKUS: {q.hrFocus}
                   </span>
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
-                  &quot;{q.question}&quot;
-                </h3>
               </div>
 
-              {/* Fokus HR */}
-              <div className="bg-slate-50/80 border border-slate-200/60 rounded-xl px-4 py-2.5 text-xs flex items-start gap-2">
-                <span className="font-bold text-slate-700 shrink-0 flex items-center gap-1.5">
-                  <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
-                  Fokus Rekruter:
-                </span>
-                <span className="text-slate-600 leading-relaxed">{q.hrFocus}</span>
-              </div>
+              {/* Main Question Text */}
+              <h4 className="font-black text-base sm:text-lg text-[#1D1D1B] leading-snug">
+                &quot;{q.question}&quot;
+              </h4>
 
-              {/* 4 Kotak S/T/A/R */}
-              <div className="space-y-2.5">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                  Struktur Jawaban Rekomendasi (STAR Framework):
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-                  {/* Situation */}
-                  <div className="bg-slate-50/50 border border-slate-200/70 rounded-2xl p-4 space-y-1 shadow-2xs">
-                    <span className="font-bold uppercase text-[10px] tracking-wider block text-blue-700">
-                      1. Situation (Situasi)
+              {/* 2x2 Grid for S / T / A / R Boxes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                {/* SITUATION */}
+                <div className="border-2 border-[#1D1D1B] bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B] p-4 flex flex-col justify-between space-y-2">
+                  <div className="flex items-center gap-2 border-b border-[#1D1D1B]/30 pb-1.5">
+                    <span className="bg-[#1D1D1B] text-[#EFE84A] font-mono text-xs font-black px-2 py-0.5 border border-[#1D1D1B]">
+                      S
                     </span>
-                    <p className="text-slate-700 leading-relaxed">
-                      {renderWithPlaceholders(q.starGuide.situation)}
-                    </p>
+                    <span className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
+                      SITUATION // KONTEKS
+                    </span>
                   </div>
+                  <p className="font-sans text-xs sm:text-sm text-[#1D1D1B] leading-relaxed">
+                    {renderInteractiveText(q.starGuide.situation, `int_${qId}_s`)}
+                  </p>
+                </div>
 
-                  {/* Task */}
-                  <div className="bg-slate-50/50 border border-slate-200/70 rounded-2xl p-4 space-y-1 shadow-2xs">
-                    <span className="font-bold uppercase text-[10px] tracking-wider block text-blue-700">
-                      2. Task (Tantangan / Peran)
+                {/* TASK */}
+                <div className="border-2 border-[#1D1D1B] bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B] p-4 flex flex-col justify-between space-y-2">
+                  <div className="flex items-center gap-2 border-b border-[#1D1D1B]/30 pb-1.5">
+                    <span className="bg-[#1E40AF] text-white font-mono text-xs font-black px-2 py-0.5 border border-[#1D1D1B]">
+                      T
                     </span>
-                    <p className="text-slate-700 leading-relaxed">
-                      {renderWithPlaceholders(q.starGuide.task)}
-                    </p>
+                    <span className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
+                      TASK // TUGAS
+                    </span>
                   </div>
+                  <p className="font-sans text-xs sm:text-sm text-[#1D1D1B] leading-relaxed">
+                    {renderInteractiveText(q.starGuide.task, `int_${qId}_t`)}
+                  </p>
+                </div>
 
-                  {/* Action */}
-                  <div className="bg-slate-50/50 border border-slate-200/70 rounded-2xl p-4 space-y-1 shadow-2xs">
-                    <span className="font-bold uppercase text-[10px] tracking-wider block text-blue-700">
-                      3. Action (Aksi Nyata & Metode)
+                {/* ACTION */}
+                <div className="border-2 border-[#1D1D1B] bg-[#F4F1EA] shadow-[2px_2px_0px_#1D1D1B] p-4 flex flex-col justify-between space-y-2">
+                  <div className="flex items-center gap-2 border-b border-[#1D1D1B]/30 pb-1.5">
+                    <span className="bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-black px-2 py-0.5 border border-[#1D1D1B]">
+                      A
                     </span>
-                    <p className="text-slate-700 leading-relaxed">
-                      {renderWithPlaceholders(q.starGuide.action)}
-                    </p>
+                    <span className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
+                      ACTION // AKSI
+                    </span>
                   </div>
+                  <p className="font-sans text-xs sm:text-sm text-[#1D1D1B] leading-relaxed">
+                    {renderInteractiveText(q.starGuide.action, `int_${qId}_a`)}
+                  </p>
+                </div>
 
-                  {/* Result */}
-                  <div className="bg-slate-50/50 border border-slate-200/70 rounded-2xl p-4 space-y-1 shadow-2xs">
-                    <span className="font-bold uppercase text-[10px] tracking-wider block text-emerald-700">
-                      4. Result (Dampak Terukur & Pembelajaran)
+                {/* RESULT */}
+                <div className="border-2 border-[#1D1D1B] bg-[#2ED47A]/20 shadow-[2px_2px_0px_#1D1D1B] p-4 flex flex-col justify-between space-y-2">
+                  <div className="flex items-center gap-2 border-b border-[#1D1D1B]/30 pb-1.5">
+                    <span className="bg-[#2ED47A] text-[#1D1D1B] font-mono text-xs font-black px-2 py-0.5 border border-[#1D1D1B]">
+                      R
                     </span>
-                    <p className="text-slate-700 leading-relaxed">
-                      {renderWithPlaceholders(q.starGuide.result)}
-                    </p>
+                    <span className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
+                      RESULT // HASIL
+                    </span>
                   </div>
+                  <p className="font-sans text-xs sm:text-sm text-[#1D1D1B] leading-relaxed">
+                    {renderInteractiveText(q.starGuide.result, `int_${qId}_r`)}
+                  </p>
                 </div>
               </div>
             </div>

@@ -4,15 +4,13 @@ import React, { useState } from "react";
 import {
   Sparkles,
   ArrowRight,
+  ArrowDown,
   Copy,
   Check,
   RotateCcw,
-  AlertCircle,
-  FileEdit,
   Tag,
   AlertTriangle,
   CheckCircle2,
-  Edit3,
 } from "lucide-react";
 import type { RewriteResult } from "@/types/karierlens";
 import {
@@ -65,29 +63,26 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 1. Error state
   if (error) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-2xs">
-          <AlertCircle className="h-6 w-6" />
-        </div>
-        <div className="max-w-md mx-auto space-y-1">
-          <h3 className="font-bold text-slate-900 text-base">Gagal Menulis Ulang Pengalaman</h3>
-          <p className="text-sm text-slate-600">{error}</p>
-        </div>
+      <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 text-center space-y-4">
+        <h3 className="font-mono text-base font-black uppercase tracking-wider">
+          [!] GAGAL MENULIS ULANG
+        </h3>
+        <p className="font-sans text-sm max-w-lg mx-auto">{error}</p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-semibold shadow-xs transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
             <RotateCcw className="h-4 w-4" />
-            Coba Lagi
+            COBA LAGI
           </button>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Tampilkan Hasil Simulasi
+            LIHAT SIMULASI
           </button>
         </div>
       </div>
@@ -97,14 +92,14 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 2. Loading Skeleton state
   if (isLoading) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 p-8 space-y-6 animate-pulse shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="h-12 w-80 bg-slate-100 rounded-2xl"></div>
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 space-y-6 animate-pulse">
+        <div className="h-14 bg-[#F4F1EA] border-2 border-[#1D1D1B]"></div>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border border-slate-200/80 rounded-2xl p-5 space-y-4">
-            <div className="h-6 w-48 bg-slate-100 rounded-md"></div>
+          <div key={i} className="border-2 border-[#1D1D1B] p-6 space-y-4">
+            <div className="h-6 w-1/3 bg-[#F4F1EA]"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="h-28 bg-slate-100 rounded-xl"></div>
-              <div className="h-28 bg-slate-100 rounded-xl"></div>
+              <div className="h-28 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
+              <div className="h-28 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
             </div>
           </div>
         ))}
@@ -115,232 +110,234 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 3. Empty state
   if (!rewriteData || !rewriteData.rewrites || rewriteData.rewrites.length === 0) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-2xs">
-          <FileEdit className="h-6 w-6" />
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 sm:p-12 text-center space-y-6">
+        <div className="inline-flex items-center justify-center p-4 bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B]">
+          <Sparkles className="h-8 w-8 text-[#1D1D1B]" />
         </div>
-        <h3 className="font-semibold text-slate-900 text-sm">Belum Ada Rekomendasi Revisi</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-          Klik tombol &quot;Audit CV & Terjemahkan Pengalaman&quot; untuk mengubah aktivitas kampus dan proyek kuliahmu menjadi pencapaian profesional terukur.
-        </p>
+
+        <div className="max-w-md mx-auto space-y-2">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+            TASK 02 // REVISI PENGALAMAN
+          </span>
+          <h3 className="font-black text-2xl text-[#1D1D1B] tracking-tight">
+            Revisi Pengalaman Kampus
+          </h3>
+          <p className="text-sm text-[#1D1D1B]/80 leading-relaxed font-sans">
+            Ubah pengalaman pasif menjadi poin terukur dengan formula Tindakan + Metode + Dampak.
+          </p>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onActivateSimulation}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>LIHAT CONTOH REVISI</span>
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Hitung total dan sisa placeholder di seluruh rewrites
-  const totalPlaceholders = rewriteData.rewrites.reduce(
-    (sum, item) => sum + countPlaceholders(item.after),
-    0
-  );
+  // 4. Hitung total dan unfilled placeholders
+  let totalPlaceholders = 0;
+  let unfilledPlaceholders = 0;
 
-  const totalUnfilled = rewriteData.rewrites.reduce(
-    (sum, item) => sum + countUnfilledPlaceholders(item.after, placeholderValues, item.id),
-    0
-  );
+  rewriteData.rewrites.forEach((item, itemIdx) => {
+    totalPlaceholders += countPlaceholders(item.after);
+    unfilledPlaceholders += countUnfilledPlaceholders(
+      item.after,
+      placeholderValues,
+      `rw_${item.id || itemIdx}`
+    );
+  });
+
+  const renderInteractiveText = (text: string, contextId: string) => {
+    const parts = splitPlaceholders(text);
+    let phIdx = 0;
+
+    return parts.map((part, idx) => {
+      if (part.isPlaceholder) {
+        const specificKey = `${contextId}_${phIdx}`;
+        const currentVal =
+          placeholderValues[specificKey] !== undefined
+            ? placeholderValues[specificKey]
+            : placeholderValues[part.text] || "";
+
+        const hint = part.hint || part.text;
+        phIdx++;
+
+        return (
+          <span key={idx} className="inline-flex items-baseline mx-1 align-baseline">
+            <input
+              type="text"
+              value={currentVal}
+              onChange={(e) => {
+                if (onPlaceholderChange) {
+                  onPlaceholderChange(specificKey, e.target.value, part.text);
+                }
+              }}
+              placeholder={hint}
+              title={`Isi data nyata: ${part.text}`}
+              className="bg-[#EFE84A] text-[#1D1D1B] font-mono font-bold text-xs px-2 py-0.5 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] placeholder:text-[#1D1D1B]/60 focus:bg-white focus:outline-none focus:ring-0 transition"
+              style={{
+                width: `${Math.max(currentVal.length, hint.length, 4) + 3}ch`,
+                minWidth: "70px",
+              }}
+            />
+          </span>
+        );
+      }
+      return <span key={idx}>{part.text}</span>;
+    });
+  };
 
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 shadow-[0_8px_30px_rgb(15,23,42,0.04)] p-6 md:p-8 space-y-6 transition-all">
-      {/* Banner Rekap & Interaktif Placeholder */}
-      <div
-        className={`border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors shadow-2xs ${
-          totalUnfilled === 0 && totalPlaceholders > 0
-            ? "bg-emerald-50/90 border-emerald-200"
-            : "bg-amber-50/90 border-amber-200/90"
-        }`}
-      >
-        <div className="flex items-center gap-3.5">
-          <span
-            className={`p-2.5 rounded-2xl shrink-0 shadow-2xs ${
-              totalUnfilled === 0 && totalPlaceholders > 0
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-amber-100 text-amber-800"
-            }`}
-          >
-            {totalUnfilled === 0 && totalPlaceholders > 0 ? (
-              <CheckCircle2 className="h-5 w-5" />
-            ) : (
+    <div className="space-y-6">
+      {/* 1. Top Counter Banner */}
+      <div className="bg-[#EFE84A] text-[#1D1D1B] border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="p-1.5 bg-[#1D1D1B] text-[#EFE84A] border border-[#1D1D1B]">
+            {unfilledPlaceholders > 0 ? (
               <AlertTriangle className="h-5 w-5" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5" />
             )}
           </span>
           <div>
-            <div className="flex items-center gap-2">
-              <h4
-                className={`text-xs font-bold uppercase tracking-wider ${
-                  totalUnfilled === 0 && totalPlaceholders > 0
-                    ? "text-emerald-900"
-                    : "text-amber-900"
-                }`}
-              >
-                Prinsip Anti-Halusinasi & Input Langsung
-              </h4>
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-white/90 px-2.5 py-0.5 rounded-full border border-slate-200 text-blue-700 shadow-2xs">
-                <Edit3 className="h-3 w-3" /> Bisa Diedit
-              </span>
-            </div>
-            <p
-              className={`text-xs sm:text-sm mt-1 leading-relaxed ${
-                totalUnfilled === 0 && totalPlaceholders > 0
-                  ? "text-emerald-800"
-                  : "text-amber-800"
-              }`}
-            >
-              {totalUnfilled === 0 && totalPlaceholders > 0 ? (
+            <span className="font-mono text-xs font-black uppercase tracking-wider block">
+              STATUS PLACEHOLDER //
+            </span>
+            <p className="font-mono text-xs sm:text-sm font-bold">
+              {unfilledPlaceholders > 0 ? (
                 <>
-                  Luar biasa! Semua <strong className="font-bold">{totalPlaceholders} placeholder</strong> telah terisi data riil. Nilai otomatis tersinkronisasi ke tab Cetak CV!
+                  <span className="underline decoration-2">{unfilledPlaceholders} DARI {totalPlaceholders}</span> PERLU DATA NYATA
                 </>
               ) : (
-                <>
-                  Tersisa{" "}
-                  <strong className="underline decoration-amber-400 underline-offset-2 font-bold">
-                    {totalUnfilled} placeholder [isi ...]
-                  </strong>
-                  . Kamu dapat <strong className="font-semibold">mengetik langsung angka/fakta riil</strong> pada kotak kuning di bawah, dan nilainya otomatis berubah di CV Cetak.
-                </>
+                `SEMUA (${totalPlaceholders}) PLACEHOLDER TERISI DATA RIIL!`
               )}
             </p>
           </div>
         </div>
+
+        <span className="font-mono text-xs font-bold text-[#1D1D1B]/70 sm:text-right">
+          Ketik langsung di kotak kuning.
+        </span>
       </div>
 
-      {/* Daftar Kartu Rewrite */}
-      <div className="space-y-5">
-        {rewriteData.rewrites.map((item, idx) => {
-          const parts = splitPlaceholders(item.after);
-          const resolvedSentence = resolveTextPlaceholders(item.after, placeholderValues, item.id);
+      {/* 2. Transformation Cards */}
+      <div className="space-y-6">
+        {rewriteData.rewrites.map((item, index) => {
+          const contextId = `rw_${item.id || index}`;
+          const resolvedSentence = resolveTextPlaceholders(
+            item.after,
+            placeholderValues,
+            contextId
+          );
+          const isCopied = copiedId === (item.id || String(index));
 
           return (
             <div
-              key={item.id || idx}
-              className="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all overflow-hidden"
+              key={item.id || index}
+              className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-5 sm:p-6 space-y-4"
             >
-              {/* Header Kartu */}
-              <div className="bg-slate-50/80 px-5 py-3.5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-white border border-slate-200 text-blue-700 shadow-2xs">
+              {/* Header Strip */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#1D1D1B] pb-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="bg-[#1E40AF] text-[#F4F1EA] font-mono text-xs font-bold px-3 py-1 rounded-full border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] uppercase">
                     {item.category}
                   </span>
-                  <span className="text-xs sm:text-sm font-semibold text-slate-800">
+                  <span className="font-black text-sm sm:text-base text-[#1D1D1B]">
                     {item.roleContext}
                   </span>
                 </div>
+
+                {/* Tactile Copy Button */}
                 <button
                   type="button"
-                  onClick={() => handleCopy(item.id, resolvedSentence)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer shadow-2xs ${
-                    copiedId === item.id
-                      ? "bg-emerald-600 text-white border-emerald-600"
-                      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                  }`}
-                  title="Salin kalimat lengkap dengan data yang sudah kamu isi"
+                  onClick={() => handleCopy(item.id || String(index), resolvedSentence)}
+                  className="bg-white hover:bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase px-3.5 py-1.5 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all duration-100 flex items-center gap-1.5 cursor-pointer ml-auto"
                 >
-                  {copiedId === item.id ? (
+                  {isCopied ? (
                     <>
-                      <Check className="h-3.5 w-3.5" />
-                      <span>Tersalin!</span>
+                      <Check className="h-3.5 w-3.5 text-[#2ED47A] stroke-[3]" />
+                      <span>TERSALIN!</span>
                     </>
                   ) : (
                     <>
                       <Copy className="h-3.5 w-3.5" />
-                      <span>Salin Kalimat</span>
+                      <span>SALIN</span>
                     </>
                   )}
                 </button>
               </div>
 
-              {/* Komparasi Sebelum & Sesudah */}
-              <div className="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Sebelum */}
-                <div className="bg-rose-50/40 border border-rose-100/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative space-y-2">
-                  <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-rose-700 uppercase tracking-wider block">
-                      Kalimat Asli di CV (Pasif / Kurang Terukur)
+              {/* Split Comparison */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
+                {/* SEBELUM */}
+                <div className="lg:col-span-5 bg-[#F4F1EA] border-2 border-[#1D1D1B] p-4 flex flex-col justify-between space-y-2">
+                  <span className="font-mono text-xs font-black uppercase tracking-wider text-[#F34E34]">
+                    SEBELUM (ASLI CV)
+                  </span>
+                  <p className="font-mono text-xs text-[#1D1D1B] leading-relaxed">
+                    &quot;{item.before}&quot;
+                  </p>
+                  <span className="font-mono text-[10px] text-[#1D1D1B]/60 uppercase">
+                    Narasi pasif tanpa metrik
+                  </span>
+                </div>
+
+                {/* Divider */}
+                <div className="lg:col-span-2 flex items-center justify-center py-1 lg:py-0">
+                  <div className="bg-[#1D1D1B] text-[#EFE84A] p-2 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] font-black">
+                    <ArrowDown className="h-4 w-4 lg:hidden" />
+                    <ArrowRight className="h-4 w-4 hidden lg:block" />
+                  </div>
+                </div>
+
+                {/* SESUDAH */}
+                <div className="lg:col-span-5 bg-[#2ED47A]/15 border-2 border-[#1D1D1B] p-4 flex flex-col justify-between space-y-2">
+                  <span className="font-mono text-xs font-black uppercase tracking-wider text-[#1E40AF]">
+                    SESUDAH (REVISI)
+                  </span>
+                  <p className="font-sans text-sm text-[#1D1D1B] font-medium leading-relaxed">
+                    • {renderInteractiveText(item.after, contextId)}
+                  </p>
+                  <span className="font-mono text-[10px] text-[#1E40AF] font-bold uppercase">
+                    Format Tindakan + Metode + Dampak
+                  </span>
+                </div>
+              </div>
+
+              {/* Footer Info */}
+              <div className="space-y-2 pt-2 border-t-2 border-[#1D1D1B]">
+                {item.keywordsAdded && item.keywordsAdded.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-xs font-bold uppercase text-[#1D1D1B] flex items-center gap-1">
+                      <Tag className="h-3.5 w-3.5 text-[#1D1D1B]" />
+                      KATA KUNCI:
                     </span>
-                    <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                      &quot;{item.before}&quot;
-                    </p>
-                  </div>
-                  <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-6 rounded-full bg-white border border-slate-300 items-center justify-center text-slate-400 shadow-xs">
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </div>
-                </div>
-
-                {/* Sesudah dengan Interactive Inline Inputs */}
-                <div className="bg-blue-50/30 border border-blue-100/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-3.5">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-blue-800 uppercase tracking-wider flex items-center gap-1.5">
-                        <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-                        Rekomendasi Revisi (Bisa Diedit Langsung)
+                    {item.keywordsAdded.map((kw, kwIdx) => (
+                      <span
+                        key={kwIdx}
+                        className="bg-[#2ED47A] text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2.5 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]"
+                      >
+                        {kw}
                       </span>
-                    </div>
-
-                    <div className="text-xs sm:text-sm text-slate-900 font-medium leading-relaxed">
-                      {parts.map((p, pIdx) => {
-                        if (p.isPlaceholder) {
-                          const specificKey = `${item.id}_${p.placeholderIndex ?? 0}`;
-                          const currentVal =
-                            placeholderValues[specificKey] ??
-                            placeholderValues[p.text] ??
-                            "";
-                          const isFilled = currentVal.trim().length > 0;
-                          const hintText = p.hint || "isi angka";
-
-                          return (
-                            <span
-                              key={pIdx}
-                              className="inline-flex items-center align-baseline mx-0.5 relative group"
-                            >
-                              <input
-                                type="text"
-                                value={currentVal}
-                                onChange={(e) => {
-                                  if (onPlaceholderChange) {
-                                    onPlaceholderChange(specificKey, e.target.value, p.text);
-                                  }
-                                }}
-                                placeholder={hintText}
-                                title={`Ketik data riil untuk: ${p.text}`}
-                                className={`px-2 py-0.5 rounded-lg text-xs transition-all outline-none font-sans ${
-                                  isFilled
-                                    ? "bg-emerald-100 text-emerald-950 font-bold border border-emerald-400 shadow-2xs focus:ring-2 focus:ring-emerald-400 focus:bg-white"
-                                    : "bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 placeholder:text-amber-800/60 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200"
-                                }`}
-                                style={{
-                                  width: `${Math.max(currentVal.length, hintText.length, 3) + 2.5}ch`,
-                                  minWidth: "70px",
-                                }}
-                              />
-                            </span>
-                          );
-                        }
-                        return <span key={pIdx}>{p.text}</span>;
-                      })}
-                    </div>
+                    ))}
                   </div>
+                )}
 
-                  {/* Kata Kunci yang Ditambahkan & Alasan */}
-                  <div className="pt-2.5 border-t border-blue-100/70 space-y-1.5">
-                    {item.keywordsAdded && item.keywordsAdded.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] font-semibold text-slate-500 uppercase flex items-center gap-1">
-                          <Tag className="h-3 w-3" />
-                          Kata Kunci JD:
-                        </span>
-                        {item.keywordsAdded.map((kw, kwIdx) => (
-                          <span
-                            key={kwIdx}
-                            className="text-[11px] font-medium bg-blue-100/70 text-blue-800 px-2.5 py-0.5 rounded-full"
-                          >
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <p className="text-[11px] text-slate-600 leading-normal">
-                      <strong className="text-slate-800 font-semibold">Alasan perbaikan:</strong> {item.improvementReason}
-                    </p>
+                {item.improvementReason && (
+                  <div className="bg-[#F4F1EA] border border-[#1D1D1B] p-2.5 font-mono text-xs text-[#1D1D1B]">
+                    <span className="font-bold uppercase text-[#1E40AF] mr-1.5">
+                      ALASAN:
+                    </span>
+                    {item.improvementReason}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           );

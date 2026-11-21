@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Printer, AlertTriangle, FileText, CheckCircle2 } from "lucide-react";
+import { Printer, AlertTriangle, CheckCircle2, RotateCcw } from "lucide-react";
 import type { CleanCvSection } from "@/types/karierlens";
 import {
   countPlaceholders,
@@ -36,23 +36,26 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 }) => {
   if (error) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <h3 className="font-bold text-slate-900 text-base">Gagal Memformat CV Bersih</h3>
-        <p className="text-sm text-slate-600">{error}</p>
+      <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 text-center space-y-4">
+        <h3 className="font-mono text-base font-black uppercase tracking-wider">
+          [!] GAGAL MEMFORMAT CV
+        </h3>
+        <p className="font-sans text-sm max-w-lg mx-auto">{error}</p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <button
             type="button"
             onClick={onRetry}
-            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-semibold cursor-pointer shadow-xs transition"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Coba Lagi
+            <RotateCcw className="h-4 w-4" />
+            COBA LAGI
           </button>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold cursor-pointer transition"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            Tampilkan Hasil Simulasi
+            LIHAT SIMULASI
           </button>
         </div>
       </div>
@@ -61,103 +64,110 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 p-8 space-y-6 animate-pulse shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="h-8 w-48 bg-slate-100 rounded-md mx-auto"></div>
-        <div className="h-4 w-64 bg-slate-100 rounded-md mx-auto"></div>
-        <div className="h-24 bg-slate-100 rounded-xl"></div>
-        <div className="h-36 bg-slate-100 rounded-xl"></div>
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-[#F4F1EA] mx-auto border border-[#1D1D1B]"></div>
+        <div className="h-4 w-64 bg-[#F4F1EA] mx-auto border border-[#1D1D1B]"></div>
+        <div className="h-24 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
+        <div className="h-36 bg-[#F4F1EA] border border-[#1D1D1B]"></div>
       </div>
     );
   }
 
   if (!cleanCv) {
     return (
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
-        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-2xs">
-          <FileText className="h-6 w-6" />
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-8 sm:p-12 text-center space-y-6">
+        <div className="inline-flex items-center justify-center p-4 bg-[#EFE84A] border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B]">
+          <Printer className="h-8 w-8 text-[#1D1D1B]" />
         </div>
-        <h3 className="font-semibold text-slate-900 text-sm">Belum Ada Draf CV Bersih</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-          CV terstruktur 1 kolom standar Harvard/ATS akan dibuat secara otomatis begitu task penulisan ulang selesai.
-        </p>
+
+        <div className="max-w-md mx-auto space-y-2">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#1E40AF]">
+            OUTPUT // FORMAT ATS
+          </span>
+          <h3 className="font-black text-2xl text-[#1D1D1B] tracking-tight">
+            Draf CV Standar ATS
+          </h3>
+          <p className="text-sm text-[#1D1D1B]/80 leading-relaxed font-sans">
+            CV 1 kolom siap cetak yang sinkron dengan data revisi.
+          </p>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onActivateSimulation}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-bold uppercase border-2 border-[#1D1D1B] shadow-[3px_3px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+          >
+            <Printer className="h-4 w-4" />
+            <span>LIHAT CONTOH CV</span>
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Count remaining unfilled placeholders in cleanCv
+  // Hitung placeholder pada seluruh bagian cleanCv
   let totalPlaceholders = 0;
   let unfilledCount = 0;
 
-  const countSection = (text?: string, contextKey?: string) => {
+  const countSection = (text?: string | null, contextId?: string) => {
     if (!text) return;
     totalPlaceholders += countPlaceholders(text);
-    unfilledCount += countUnfilledPlaceholders(text, placeholderValues, contextKey);
+    unfilledCount += countUnfilledPlaceholders(text, placeholderValues, contextId);
   };
 
-  countSection(cleanCv.fullName, "name");
-  countSection(cleanCv.headline, "headline");
-  countSection(cleanCv.summary, "summary");
-  countSection(cleanCv.education, "education");
-  cleanCv.skills?.forEach((sk, i) => countSection(sk, `skill_${i}`));
+  countSection(cleanCv.fullName, "cv_name");
+  countSection(cleanCv.headline, "cv_headline");
+  countSection(cleanCv.summary, "cv_summary");
+  countSection(cleanCv.education, "cv_education");
+  cleanCv.skills?.forEach((s, idx) => countSection(s, `cv_skill_${idx}`));
   cleanCv.experiences?.forEach((exp, expIdx) => {
-    countSection(exp.title, `exp_${expIdx}_title`);
-    countSection(exp.organization, `exp_${expIdx}_org`);
-    countSection(exp.period, `exp_${expIdx}_period`);
-    exp.bullets?.forEach((b, bIdx) => countSection(b, `exp_${expIdx}_b_${bIdx}`));
+    countSection(exp.title, `cv_exp_${expIdx}_title`);
+    countSection(exp.organization, `cv_exp_${expIdx}_org`);
+    countSection(exp.period, `cv_exp_${expIdx}_period`);
+    exp.bullets?.forEach((b, bIdx) => countSection(b, `cv_exp_${expIdx}_b_${bIdx}`));
   });
 
-  const renderWithPlaceholders = (text?: string, contextKey?: string) => {
+  const renderWithPlaceholders = (text?: string | null, contextId?: string) => {
     if (!text) return null;
     const parts = splitPlaceholders(text);
+    let phIdx = 0;
 
     return parts.map((p, idx) => {
       if (p.isPlaceholder) {
-        const specificKey = contextKey ? `${contextKey}_${p.placeholderIndex ?? 0}` : "";
+        const specificKey = contextId ? `${contextId}_${phIdx}` : "";
         const filledVal =
           (specificKey && placeholderValues[specificKey]) ||
           placeholderValues[p.text] ||
           "";
+
         const isFilled = filledVal.trim().length > 0;
-        const hint = p.hint || "isi";
+        const hint = p.hint || p.text;
+        phIdx++;
 
         return (
-          <span key={idx} className="inline-block">
-            {/* Screen View: Interactive or styled span */}
-            <span className="no-print">
-              {isFilled ? (
-                <span
-                  title="Klik untuk mengubah nilai"
-                  onClick={() => {
-                    const newVal = prompt(`Ubah nilai untuk ${p.text}:`, filledVal);
-                    if (newVal !== null && onPlaceholderChange) {
-                      onPlaceholderChange(specificKey || p.text, newVal, p.text);
-                    }
-                  }}
-                  className="font-bold text-slate-900 bg-emerald-100/80 hover:bg-emerald-200 border border-emerald-300 px-1.5 py-0.5 rounded cursor-pointer transition shadow-2xs"
-                >
-                  {filledVal}
-                </span>
-              ) : (
-                <input
-                  type="text"
-                  value={filledVal}
-                  onChange={(e) => {
-                    if (onPlaceholderChange) {
-                      onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
-                    }
-                  }}
-                  placeholder={hint}
-                  title={`Ketik langsung data riil untuk: ${p.text}`}
-                  className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-1.5 py-0.5 rounded text-xs outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white"
-                  style={{
-                    width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
-                    minWidth: "60px",
-                  }}
-                />
-              )}
+          <span key={idx} className="inline align-baseline">
+            {/* Screen View */}
+            <span className="print:hidden inline-flex items-baseline mx-0.5">
+              <input
+                type="text"
+                value={filledVal}
+                onChange={(e) => {
+                  if (onPlaceholderChange) {
+                    onPlaceholderChange(specificKey || p.text, e.target.value, p.text);
+                  }
+                }}
+                placeholder={hint}
+                title={`Ketik data riil: ${p.text}`}
+                className="bg-[#EFE84A] text-[#1D1D1B] font-mono font-bold text-xs px-1.5 py-0.5 border border-[#1D1D1B] shadow-[1px_1px_0px_#1D1D1B] placeholder:text-[#1D1D1B]/60 focus:bg-white focus:outline-none focus:ring-0 transition"
+                style={{
+                  width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
+                  minWidth: "60px",
+                }}
+              />
             </span>
 
-            {/* Print View: 100% Clean plain text (no borders, no backgrounds, strict print safe) */}
+            {/* Print View */}
             <span className="hidden print:inline font-normal text-black">
               {isFilled ? filledVal : p.text}
             </span>
@@ -175,14 +185,14 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Action & Warning Bar */}
-      <div className="no-print bg-white/80 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-white/90 shadow-[0_8px_30px_rgb(15,23,42,0.04)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all">
+      {/* Action & Warning Bar on Screen */}
+      <div className="no-print bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <span
-            className={`p-2.5 rounded-2xl shadow-2xs ${
+            className={`p-2 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] ${
               unfilledCount === 0 && totalPlaceholders > 0
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-amber-100 text-amber-800"
+                ? "bg-[#2ED47A] text-[#1D1D1B]"
+                : "bg-[#EFE84A] text-[#1D1D1B]"
             }`}
           >
             {unfilledCount === 0 && totalPlaceholders > 0 ? (
@@ -192,134 +202,145 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
             )}
           </span>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="font-mono text-xs font-black uppercase tracking-wider text-[#1D1D1B]">
               {unfilledCount === 0 && totalPlaceholders > 0
-                ? "Dokumen CV Siap Dicetak"
-                : "Peringatan Sebelum Mencetak"}
+                ? "SIAP DICETAK"
+                : "PERIKSA PLACEHOLDER //"}
             </h4>
-            <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+            <p className="font-sans text-xs text-[#1D1D1B]/80 mt-0.5 leading-relaxed">
               {unfilledCount > 0 ? (
                 <>
-                  Tersisa <strong className="text-amber-800 font-semibold">{unfilledCount} placeholder</strong>. Data yang kamu ketik di tab Penulisan Ulang otomatis masuk ke sini, atau kamu bisa melengkapinya langsung pada kotak kuning di bawah.
+                  Tersisa <strong className="font-mono font-bold text-[#F34E34]">{unfilledCount} placeholder</strong> kosong.
                 </>
               ) : (
-                "Seluruh bagian sudah lengkap dengan data riil dan siap dicetak atau disimpan ke file PDF."
+                "Semua data lengkap dan siap dicetak."
               )}
             </p>
           </div>
         </div>
 
+        {/* CTA Button */}
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#EFE84A] text-[#1D1D1B] font-mono text-xs font-black uppercase tracking-wider border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1D1D1B] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100 cursor-pointer shrink-0"
         >
           <Printer className="h-4 w-4" />
-          Cetak / Simpan PDF
+          <span>CETAK PDF</span>
         </button>
       </div>
 
-      {/* Dokumen CV 1 Kolom Format Harvard/ATS (STRICT PRINT SAFETY) */}
-      <div
-        id="print-area"
-        className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(15,23,42,0.04)] font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none print:bg-white"
-      >
-        {/* Header Nama & Kontak */}
-        <div className="text-center border-b border-slate-300 pb-5 space-y-1.5 print:border-black">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 uppercase print:text-black">
-            {renderWithPlaceholders(cleanCv.fullName, "name")}
-          </h1>
-          <p className="text-xs sm:text-sm font-semibold text-slate-700 print:text-black">
-            {renderWithPlaceholders(cleanCv.headline, "headline")}
-          </p>
-
-          {/* Kontak dari ekstraksi lokal di browser */}
-          <div className="text-xs text-slate-600 pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1 print:text-black">
-            {contactItems.length > 0 ? (
-              contactItems.map((c, i) => (
-                <span key={i} className="inline-block">
-                  {c} {i < contactItems.length - 1 && "•"}
-                </span>
-              ))
-            ) : (
-              <span className="italic text-slate-400">[kontak dari draf awal]</span>
-            )}
-          </div>
-        </div>
-
-        {/* Ringkasan Profil */}
-        {cleanCv.summary && (
-          <div className="space-y-1">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Ringkasan Profesional
-            </h2>
-            <p className="text-xs sm:text-sm leading-relaxed text-slate-800 pt-1 print:text-black">
-              {renderWithPlaceholders(cleanCv.summary, "summary")}
+      {/* Preview Frame with Hard Border on Screen */}
+      <div className="border-2 border-[#1D1D1B] shadow-[6px_6px_0px_#1D1D1B] bg-white p-6 sm:p-12 max-w-4xl mx-auto print:border-none print:shadow-none print:p-0 print:m-0 print:bg-white">
+        {/* Dokumen CV 1 Kolom Standar Harvard / ATS */}
+        <div
+          id="print-area"
+          className="space-y-6 font-sans text-black text-sm"
+        >
+          {/* Header Nama & Kontak */}
+          <div className="text-center border-b border-black pb-4 space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-black uppercase">
+              {renderWithPlaceholders(cleanCv.fullName, "cv_name")}
+            </h1>
+            <p className="text-xs sm:text-sm font-semibold text-black">
+              {renderWithPlaceholders(cleanCv.headline, "cv_headline")}
             </p>
-          </div>
-        )}
 
-        {/* Pendidikan */}
-        {cleanCv.education && (
-          <div className="space-y-1">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Pendidikan
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-800 pt-1 font-medium print:text-black">
-              {renderWithPlaceholders(cleanCv.education, "education")}
-            </p>
-          </div>
-        )}
-
-        {/* Pengalaman */}
-        {cleanCv.experiences && cleanCv.experiences.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Pengalaman Organisasi & Proyek
-            </h2>
-            <div className="space-y-4 pt-1">
-              {cleanCv.experiences.map((exp, expIdx) => (
-                <div key={expIdx} className="space-y-1">
-                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-xs sm:text-sm">
-                    <span className="font-bold text-slate-900 print:text-black">
-                      {renderWithPlaceholders(exp.title, `exp_${expIdx}_title`)}
-                    </span>
-                    <span className="text-xs text-slate-500 font-medium print:text-black">
-                      {renderWithPlaceholders(exp.period, `exp_${expIdx}_period`)}
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-slate-700 print:text-black">
-                    {renderWithPlaceholders(exp.organization, `exp_${expIdx}_org`)}
-                  </div>
-                  <ul className="list-disc list-outside pl-4 space-y-1 pt-1 text-xs sm:text-sm text-slate-800 print:text-black">
-                    {(exp.bullets || []).map((bullet, bIdx) => (
-                      <li key={bIdx} className="leading-relaxed">
-                        {renderWithPlaceholders(bullet, `exp_${expIdx}_b_${bIdx}`)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            {/* Kontak */}
+            <div className="text-xs text-black pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-1">
+              {contactItems.length > 0 ? (
+                contactItems.map((c, i) => (
+                  <span key={i} className="inline-block">
+                    {c} {i < contactItems.length - 1 && "•"}
+                  </span>
+                ))
+              ) : (
+                <span className="italic text-gray-500">[kontak dari draf awal]</span>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Keahlian & Keterampilan */}
-        {cleanCv.skills && cleanCv.skills.length > 0 && (
-          <div className="space-y-1.5">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Keahlian & Kompetensi
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-800 pt-1 leading-relaxed print:text-black">
-              {cleanCv.skills.map((sk, idx) => (
-                <span key={idx}>
-                  {renderWithPlaceholders(sk, `skill_${idx}`)}
-                  {idx < cleanCv.skills.length - 1 ? ", " : ""}
-                </span>
-              ))}
-            </p>
-          </div>
-        )}
+          {/* Ringkasan Profil */}
+          {cleanCv.summary && (
+            <div className="space-y-1">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
+                Ringkasan Profesional
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-black pt-1">
+                {renderWithPlaceholders(cleanCv.summary, "cv_summary")}
+              </p>
+            </div>
+          )}
+
+          {/* Pendidikan */}
+          {cleanCv.education && (
+            <div className="space-y-1">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
+                Pendidikan
+              </h2>
+              <p className="text-xs sm:text-sm text-black pt-1 font-medium">
+                {renderWithPlaceholders(cleanCv.education, "cv_education")}
+              </p>
+            </div>
+          )}
+
+          {/* Pengalaman Organisasi & Proyek */}
+          {cleanCv.experiences && cleanCv.experiences.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
+                Pengalaman Organisasi & Proyek
+              </h2>
+              <div className="space-y-4 pt-1">
+                {cleanCv.experiences.map((exp, expIdx) => (
+                  <div key={expIdx} className="space-y-1">
+                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between text-xs sm:text-sm">
+                      <span className="font-bold text-black">
+                        {renderWithPlaceholders(exp.title, `cv_exp_${expIdx}_title`)}
+                      </span>
+                      <span className="font-mono text-xs text-black/80 font-semibold">
+                        {renderWithPlaceholders(exp.period, `cv_exp_${expIdx}_period`)}
+                      </span>
+                    </div>
+
+                    <div className="text-xs font-semibold text-black/90">
+                      {renderWithPlaceholders(exp.organization, `cv_exp_${expIdx}_org`)}
+                    </div>
+
+                    {exp.bullets && exp.bullets.length > 0 && (
+                      <ul className="list-disc list-outside ml-5 text-xs sm:text-sm space-y-1 pt-1 text-black">
+                        {exp.bullets.map((bullet, bulletIdx) => (
+                          <li key={bulletIdx} className="leading-relaxed">
+                            {renderWithPlaceholders(
+                              bullet,
+                              `cv_exp_${expIdx}_b_${bulletIdx}`
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Kemampuan (Skills) */}
+          {cleanCv.skills && cleanCv.skills.length > 0 && (
+            <div className="space-y-1">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black border-b border-black pb-1">
+                Kemampuan Teknis & Non-Teknis
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-black pt-1">
+                {cleanCv.skills.map((skill, sIdx) => (
+                  <span key={sIdx}>
+                    {renderWithPlaceholders(skill, `cv_skill_${sIdx}`)}
+                    {sIdx < cleanCv.skills.length - 1 && " • "}
+                  </span>
+                ))}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -2,8 +2,6 @@
 
 import React, { useMemo } from "react";
 import {
-  FileText,
-  Briefcase,
   ShieldCheck,
   Upload,
   Globe,
@@ -73,232 +71,225 @@ export const InputPanel: React.FC<InputPanelProps> = ({
   };
 
   return (
-    <div className="no-print bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 shadow-[0_8px_30px_rgb(15,23,42,0.04)] p-6 md:p-8 space-y-6 transition-all">
+    <div className="no-print space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Kolom Kiri: Input CV */}
-        <div className="space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 font-semibold text-slate-900 text-sm">
-              <span className="p-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                <FileText className="h-4 w-4" />
-              </span>
-              <span>Teks Pengalaman CV Kamu</span>
-            </label>
+        {/* Kolom 01: Input CV */}
+        <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] rounded-none flex flex-col">
+          {/* Header Strip CV: Acid Yellow */}
+          <div className="bg-[#EFE84A] border-b-2 border-[#1D1D1B] px-4 py-3 flex items-center justify-between">
+            <span className="font-mono text-xs sm:text-sm font-black text-[#1D1D1B] uppercase tracking-wider flex items-center gap-2">
+              01 // DATA PENGALAMAN (CV)
+            </span>
             <span
-              className={`text-xs ${
-                cvLength < 30 || cvLength > 12000
-                  ? "text-rose-500 font-medium"
-                  : "text-slate-400"
+              className={`font-mono text-xs font-bold ${
+                cvLength > 0 && (cvLength < 30 || cvLength > 12000)
+                  ? "text-[#F34E34]"
+                  : "text-[#1D1D1B]"
               }`}
             >
-              {cvLength.toLocaleString()} / 12.000 karakter
+              {cvLength.toLocaleString()} / 12.000
             </span>
           </div>
 
-          {/* Upload PDF Area */}
-          {onPdfUpload && (
-            <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-              className="border-2 border-dashed border-slate-300/80 hover:border-blue-400 bg-slate-50/70 hover:bg-blue-50/40 rounded-2xl p-3 text-center transition cursor-pointer relative shadow-2xs group"
-            >
-              <input
-                type="file"
-                accept=".pdf,application/pdf"
-                onChange={handleFileChange}
-                disabled={isLoading || pdfParsing}
-                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                title="Pilih file PDF"
-              />
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-600 font-medium group-hover:text-blue-700 transition">
-                {pdfParsing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
-                    <span>Mengekstrak teks PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4 text-blue-600" />
-                    <span>
-                      Tarik file PDF CV ke sini atau{" "}
-                      <span className="text-blue-600 underline font-semibold">klik untuk unggah</span> (Maks. 5 MB)
-                    </span>
-                  </>
-                )}
+          <div className="p-4 sm:p-5 flex-1 flex flex-col space-y-3">
+            {/* PDF dropzone with thick dashed border */}
+            {onPdfUpload && (
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-[#1D1D1B] bg-[#F4F1EA] hover:bg-[#EFE84A]/25 p-3 text-center transition cursor-pointer relative group"
+              >
+                <input
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  onChange={handleFileChange}
+                  disabled={isLoading || pdfParsing}
+                  className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  title="Pilih file PDF"
+                />
+                <div className="flex items-center justify-center gap-2 font-mono text-xs font-bold text-[#1D1D1B]">
+                  {pdfParsing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 text-[#1D1D1B] animate-spin" />
+                      <span>MENGEKSTRAK PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 text-[#1D1D1B]" />
+                      <span>
+                        UNGGAH PDF CV{" "}
+                        <span className="underline decoration-2 text-[#1E40AF]">(KLIK / TARIK FILE)</span> — MAKS. 5 MB
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
+            )}
+
+            {/* Textarea CV */}
+            <div className="relative flex-1">
+              <textarea
+                rows={9}
+                value={cvText}
+                onChange={(e) => setCvText(e.target.value)}
+                placeholder={`Tempel draf CV di sini (organisasi, kepanitiaan, asisten lab, proyek kuliah)...`}
+                className="w-full min-h-[220px] rounded-none border-2 border-[#1D1D1B] bg-[#F4F1EA] p-4 text-sm font-sans text-[#1D1D1B] placeholder:text-[#1D1D1B]/50 focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[3px_3px_0px_#1D1D1B] transition resize-y"
+              />
             </div>
-          )}
 
-          <div className="relative flex-1">
-            <textarea
-              rows={9}
-              value={cvText}
-              onChange={(e) => setCvText(e.target.value)}
-              placeholder={`Tempel draf CV kamu di sini. Jangan khawatir jika bahasanya masih pasif atau berupa poin organisasi kampus biasa...
-
-Contoh:
-Raka Pratama - raka@example.com - 081234567890
-- Koordinator Divisi Acara Seminar Teknologi HIMA SI (bertugas membuat rundown dan kontak pembicara)
-- Proyek Tugas Akhir: Bikin sistem perpustakaan pakai React dan MySQL
-- Anggota UKM Kewirausahaan membantu jualan bazar kampus...`}
-              className="w-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition resize-y font-sans shadow-2xs"
-            />
+            {cvLength > 0 && cvLength < 30 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Minimal 30 karakter.
+              </p>
+            )}
+            {cvLength > 12000 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Maksimal 12.000 karakter.
+              </p>
+            )}
           </div>
-
-          {cvLength > 0 && cvLength < 30 && (
-            <p className="text-xs text-rose-500 font-medium">
-              * Teks CV terlalu pendek. Masukkan minimal 30 karakter.
-            </p>
-          )}
-          {cvLength > 12000 && (
-            <p className="text-xs text-rose-500 font-medium">
-              * Teks CV melebihi batas maksimal 12.000 karakter.
-            </p>
-          )}
         </div>
 
-        {/* Kolom Kanan: Input JD */}
-        <div className="space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 font-semibold text-slate-900 text-sm">
-              <span className="p-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                <Briefcase className="h-4 w-4" />
-              </span>
-              <span>Target Lowongan / Job Description (JD)</span>
-            </label>
+        {/* Kolom 02: Input JD */}
+        <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] rounded-none flex flex-col">
+          {/* Header Strip JD: Cobalt Blue */}
+          <div className="bg-[#1E40AF] text-[#F4F1EA] border-b-2 border-[#1D1D1B] px-4 py-3 flex items-center justify-between">
+            <span className="font-mono text-xs sm:text-sm font-black text-[#F4F1EA] uppercase tracking-wider flex items-center gap-2">
+              02 // TARGET LOWONGAN (JD)
+            </span>
             <span
-              className={`text-xs ${
-                jdLength < 30 || jdLength > 8000
-                  ? "text-rose-500 font-medium"
-                  : "text-slate-400"
+              className={`font-mono text-xs font-bold ${
+                jdLength > 0 && (jdLength < 30 || jdLength > 8000)
+                  ? "text-[#EFE84A]"
+                  : "text-[#F4F1EA]"
               }`}
             >
-              {jdLength.toLocaleString()} / 8.000 karakter
+              {jdLength.toLocaleString()} / 8.000
             </span>
           </div>
 
-          {/* Opsi Bahasa */}
-          <div className="flex items-center justify-between bg-slate-50/80 border border-slate-200/80 rounded-2xl px-3.5 py-2 text-xs">
-            <span className="text-slate-600 font-medium flex items-center gap-1.5">
-              <Globe className="h-3.5 w-3.5 text-slate-500" />
-              Bahasa Output Rekomendasi:
-            </span>
-            <div className="flex items-center gap-1 bg-slate-200/60 p-0.5 rounded-full">
-              <button
-                type="button"
-                onClick={() => setLanguage("id")}
-                className={`px-3 py-1 rounded-full font-medium transition cursor-pointer text-xs ${
-                  language === "id"
-                    ? "bg-white text-blue-700 shadow-2xs font-semibold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Bahasa Indonesia
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage("en")}
-                className={`px-3 py-1 rounded-full font-medium transition cursor-pointer text-xs ${
-                  language === "en"
-                    ? "bg-white text-blue-700 shadow-2xs font-semibold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                English
-              </button>
+          <div className="p-4 sm:p-5 flex-1 flex flex-col space-y-3">
+            {/* Opsi Bahasa */}
+            <div className="flex items-center justify-between bg-[#F4F1EA] border-2 border-[#1D1D1B] p-2.5">
+              <span className="font-mono text-xs font-bold text-[#1D1D1B] flex items-center gap-1.5 uppercase">
+                <Globe className="h-3.5 w-3.5 text-[#1D1D1B]" />
+                BAHASA:
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setLanguage("id")}
+                  className={`px-3 py-1 font-mono text-xs font-bold border-2 border-[#1D1D1B] transition cursor-pointer ${
+                    language === "id"
+                      ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B]"
+                      : "bg-white text-[#1D1D1B] hover:bg-[#EFE84A]/30"
+                  }`}
+                >
+                  INDONESIA
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage("en")}
+                  className={`px-3 py-1 font-mono text-xs font-bold border-2 border-[#1D1D1B] transition cursor-pointer ${
+                    language === "en"
+                      ? "bg-[#EFE84A] text-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B]"
+                      : "bg-white text-[#1D1D1B] hover:bg-[#EFE84A]/30"
+                  }`}
+                >
+                  ENGLISH
+                </button>
+              </div>
             </div>
+
+            {/* Textarea JD */}
+            <div className="relative flex-1">
+              <textarea
+                rows={9}
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder={`Tempel kualifikasi atau Job Description lowongan kerja target di sini...`}
+                className="w-full min-h-[220px] rounded-none border-2 border-[#1D1D1B] bg-[#F4F1EA] p-4 text-sm font-sans text-[#1D1D1B] placeholder:text-[#1D1D1B]/50 focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[3px_3px_0px_#1D1D1B] transition resize-y"
+              />
+            </div>
+
+            {jdLength > 0 && jdLength < 30 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Minimal 30 karakter.
+              </p>
+            )}
+            {jdLength > 8000 && (
+              <p className="font-mono text-xs text-[#F34E34] font-bold">
+                [!] Maksimal 8.000 karakter.
+              </p>
+            )}
           </div>
-
-          <div className="relative flex-1">
-            <textarea
-              rows={9}
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              placeholder={`Tempel rincian lowongan kerja, kualifikasi magang (MSIB/mandiri), atau Job Description target di sini...
-
-Contoh:
-Product Management Intern - Cakrawala Fintech
-Tanggung Jawab:
-- Melakukan user research dan merumuskan Product Requirement Document (PRD)
-- Berkolaborasi lintas divisi (cross-functional) dengan tim engineering dan UI/UX
-- Mengikuti ritme kerja Agile/Scrum dan menganalisis KPI produk...`}
-              className="w-full rounded-2xl border border-slate-200/80 bg-slate-50/40 p-4 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition resize-y font-sans shadow-2xs"
-            />
-          </div>
-
-          {jdLength > 0 && jdLength < 30 && (
-            <p className="text-xs text-rose-500 font-medium">
-              * Teks lowongan terlalu pendek. Masukkan minimal 30 karakter.
-            </p>
-          )}
-          {jdLength > 8000 && (
-            <p className="text-xs text-rose-500 font-medium">
-              * Teks lowongan melebihi batas maksimal 8.000 karakter.
-            </p>
-          )}
         </div>
       </div>
 
       {/* Baris Privasi & Masking PII */}
-      <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-3">
+      <div className="bg-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 sm:p-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <label className="flex items-center gap-3 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={maskPiiEnabled}
               onChange={(e) => setMaskPiiEnabled(e.target.checked)}
-              className="h-4 w-4 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              className="h-5 w-5 rounded-none border-2 border-[#1D1D1B] text-[#1E40AF] focus:ring-0 cursor-pointer accent-[#1E40AF]"
             />
-            <span className="text-xs sm:text-sm font-semibold text-slate-800 flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              Samarkan data pribadi di browser sebelum dikirim ke AI
+            <span className="font-mono text-xs sm:text-sm font-bold text-[#1D1D1B] uppercase flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-[#2ED47A]" />
+              Samarkan Data Pribadi (Privasi Klien)
             </span>
           </label>
 
-          <span className="text-[11px] text-slate-500 italic">
-            * Nama lengkap tidak disamarkan
+          <span className="font-mono text-xs font-bold text-[#F34E34]">
+            * Nama tidak disamarkan.
           </span>
         </div>
 
         {maskPiiEnabled && (
-          <div className="space-y-2 pt-2 border-t border-slate-200/60 text-xs">
-            <div className="flex flex-wrap items-center gap-2 text-slate-600">
-              <span className="font-semibold text-slate-700">Ringkasan Privasi:</span>
+          <div className="space-y-3 pt-3 border-t-2 border-[#1D1D1B]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-xs font-bold uppercase text-[#1D1D1B]">
+                PRIVASI:
+              </span>
               {totalMasked === 0 ? (
-                <span className="text-slate-400">Tidak ada kontak sensitif terdeteksi di CV</span>
+                <span className="font-mono text-xs text-[#1D1D1B]/60">
+                  Kontak aman
+                </span>
               ) : (
                 <>
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-2.5 py-0.5 rounded-full">
-                    {totalMasked} entri disamarkan
+                  <span className="bg-[#2ED47A] text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2.5 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                    {totalMasked} DISAMARKAN
                   </span>
                   {piiData.counts.email > 0 && (
-                    <span className="bg-slate-200/70 px-2 py-0.5 rounded-md text-slate-700 font-medium">
-                      Email: {piiData.counts.email}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      email: {piiData.counts.email}
                     </span>
                   )}
                   {piiData.counts.phone > 0 && (
-                    <span className="bg-slate-200/70 px-2 py-0.5 rounded-md text-slate-700 font-medium">
-                      Telepon: {piiData.counts.phone}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      telepon: {piiData.counts.phone}
                     </span>
                   )}
                   {piiData.counts.link > 0 && (
-                    <span className="bg-slate-200/70 px-2 py-0.5 rounded-md text-slate-700 font-medium">
-                      Link: {piiData.counts.link}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      link: {piiData.counts.link}
                     </span>
                   )}
                   {piiData.counts.nik > 0 && (
-                    <span className="bg-slate-200/70 px-2 py-0.5 rounded-md text-slate-700 font-medium">
-                      NIK: {piiData.counts.nik}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      nik: {piiData.counts.nik}
                     </span>
                   )}
                   {piiData.counts.nim > 0 && (
-                    <span className="bg-slate-200/70 px-2 py-0.5 rounded-md text-slate-700 font-medium">
-                      NIM: {piiData.counts.nim}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      nim: {piiData.counts.nim}
                     </span>
                   )}
                   {piiData.counts.address > 0 && (
-                    <span className="bg-slate-200/70 px-2 py-0.5 rounded-md text-slate-700 font-medium">
-                      Alamat: {piiData.counts.address}
+                    <span className="bg-white text-[#1D1D1B] border-2 border-[#1D1D1B] font-mono text-xs font-bold px-2 py-0.5 rounded-full shadow-[1px_1px_0px_#1D1D1B]">
+                      alamat: {piiData.counts.address}
                     </span>
                   )}
                 </>
@@ -306,12 +297,12 @@ Tanggung Jawab:
             </div>
 
             {totalMasked > 0 && (
-              <details className="text-[11px] text-slate-500 cursor-pointer pt-1">
-                <summary className="hover:text-blue-600 inline-flex items-center gap-1.5 font-medium select-none">
+              <details className="cursor-pointer pt-1">
+                <summary className="font-mono text-xs font-bold text-[#1E40AF] hover:underline inline-flex items-center gap-1.5 uppercase select-none">
                   <Eye className="h-3.5 w-3.5" />
-                  Lihat teks CV yang dikirim ke AI
+                  LIHAT HASIL MASKING
                 </summary>
-                <div className="mt-2 p-3 bg-slate-900 text-slate-100 rounded-xl font-mono text-[11px] max-h-40 overflow-y-auto whitespace-pre-wrap border border-slate-800">
+                <div className="mt-2 font-mono bg-[#1D1D1B] text-[#F4F1EA] p-4 border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] text-xs max-h-40 overflow-y-auto whitespace-pre-wrap">
                   {piiData.masked}
                 </div>
               </details>
@@ -320,23 +311,23 @@ Tanggung Jawab:
         )}
       </div>
 
-      {/* Tombol Eksekusi Audit (Midnight Navy Pill CTA) */}
+      {/* Primary CTA Button: Oversized Acid Yellow Tactile Button */}
       <div>
         <button
           type="button"
           onClick={onAudit}
           disabled={!canAudit}
-          className="w-full py-4 px-8 rounded-full font-semibold text-white bg-slate-900 hover:bg-slate-800 active:bg-slate-950 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed shadow-[0_10px_25px_-5px_rgba(15,23,42,0.15)] hover:shadow-[0_15px_30px_-5px_rgba(15,23,42,0.25)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2.5 text-base cursor-pointer"
+          className="w-full py-4 px-6 bg-[#EFE84A] text-[#1D1D1B] font-black text-base uppercase tracking-wider border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#1D1D1B] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100 disabled:opacity-50 disabled:translate-x-0 disabled:translate-y-0 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer"
         >
           {isLoading ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
-              <span>Menganalisis Kata Kunci, Menulis Ulang & Menyiapkan Wawancara...</span>
+              <Loader2 className="h-5 w-5 animate-spin text-[#1D1D1B]" />
+              <span>MENGANALISIS CV...</span>
             </>
           ) : (
             <>
-              <Sparkles className="h-5 w-5 text-amber-400" />
-              <span>Audit CV & Terjemahkan Pengalaman ke Bahasa Rekruter</span>
+              <Sparkles className="h-5 w-5 text-[#1D1D1B]" />
+              <span>AUDIT CV SEKARANG</span>
             </>
           )}
         </button>

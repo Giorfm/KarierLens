@@ -16,31 +16,26 @@ export const StatusBanner: React.FC<StatusBannerProps> = ({
   onActivateSimulation,
 }) => {
   return (
-    <div className="no-print space-y-2">
-      {/* Simulation Banner */}
+    <div className="no-print space-y-3">
+      {/* Simulation Mode Banner: Acid Yellow Strip */}
       {isSimulation && (
-        <div className="bg-amber-50/90 border border-amber-200/80 text-amber-900 px-5 py-3.5 rounded-2xl flex items-center justify-between shadow-xs backdrop-blur-xs transition-all">
+        <div className="bg-[#EFE84A] text-[#1D1D1B] border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="p-1.5 rounded-xl bg-amber-100 text-amber-800 border border-amber-200/60 shadow-2xs">
+            <span className="p-1 bg-[#1D1D1B] text-[#EFE84A] border border-[#1D1D1B]">
               <Sparkles className="h-4 w-4" />
             </span>
-            <div className="text-sm">
-              <span className="font-bold tracking-wide uppercase text-amber-800 mr-2 text-[11px] bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300">
-                Mode Simulasi
-              </span>
-              <span className="text-amber-900 text-xs sm:text-sm">
-                Menampilkan profil demo tersimpan, bukan analisis langsung dari input Anda.
-              </span>
+            <div className="font-mono text-xs sm:text-sm font-bold uppercase tracking-wide">
+              MODE SIMULASI — Menampilkan profil demo tersimpan.
             </div>
           </div>
         </div>
       )}
 
-      {/* Global Error Banner */}
+      {/* Global Error Banner: Vermilion Coral */}
       {globalError && (
-        <div className="bg-rose-50/95 border border-rose-200 text-rose-900 px-5 py-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs transition-all">
+        <div className="bg-[#F34E34] text-white border-2 border-[#1D1D1B] shadow-[4px_4px_0px_#1D1D1B] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="p-1.5 rounded-xl bg-rose-100 text-rose-800 border border-rose-200/60 mt-0.5 sm:mt-0 shadow-2xs">
+            <span className="p-1 bg-white text-[#F34E34] border border-[#1D1D1B] mt-0.5">
               {globalError.code === "RATE_LIMIT" ? (
                 <AlertTriangle className="h-4 w-4" />
               ) : (
@@ -48,19 +43,19 @@ export const StatusBanner: React.FC<StatusBannerProps> = ({
               )}
             </span>
             <div>
-              <p className="text-sm font-semibold text-rose-900">{globalError.message}</p>
-              <p className="text-xs text-rose-700 mt-0.5">
-                Kode Kendala: <code className="font-mono bg-rose-100/80 px-1 py-0.5 rounded text-[11px] font-semibold">{globalError.code}</code>
+              <p className="text-sm font-black uppercase tracking-wide">{globalError.message}</p>
+              <p className="font-mono text-xs text-white/90 mt-0.5">
+                KODE: <span className="bg-[#1D1D1B] text-[#EFE84A] px-1.5 py-0.5 font-bold">{globalError.code}</span>
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-semibold shadow-xs transition cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#EFE84A] text-[#1D1D1B] border-2 border-[#1D1D1B] shadow-[2px_2px_0px_#1D1D1B] hover:translate-x-[1px] hover:translate-y-[1px] font-mono text-xs font-bold uppercase transition cursor-pointer shrink-0"
           >
             <Play className="h-3.5 w-3.5 fill-current" />
-            Tampilkan Hasil Simulasi
+            LIHAT SIMULASI
           </button>
         </div>
       )}
