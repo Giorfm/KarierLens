@@ -36,21 +36,21 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 }) => {
   if (error) {
     return (
-      <div className="bg-white rounded-2xl border border-rose-200 p-8 text-center space-y-4 shadow-xs">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
         <h3 className="font-bold text-slate-900 text-base">Gagal Memformat CV Bersih</h3>
         <p className="text-sm text-slate-600">{error}</p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <button
             type="button"
             onClick={onRetry}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold"
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-semibold cursor-pointer shadow-xs transition"
           >
             Coba Lagi
           </button>
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+            className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold cursor-pointer transition"
           >
             Tampilkan Hasil Simulasi
           </button>
@@ -61,23 +61,23 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 space-y-6 animate-pulse">
-        <div className="h-8 w-48 bg-slate-100 rounded mx-auto"></div>
-        <div className="h-4 w-64 bg-slate-100 rounded mx-auto"></div>
-        <div className="h-20 bg-slate-100 rounded"></div>
-        <div className="h-32 bg-slate-100 rounded"></div>
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 p-8 space-y-6 animate-pulse shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+        <div className="h-8 w-48 bg-slate-100 rounded-md mx-auto"></div>
+        <div className="h-4 w-64 bg-slate-100 rounded-md mx-auto"></div>
+        <div className="h-24 bg-slate-100 rounded-xl"></div>
+        <div className="h-36 bg-slate-100 rounded-xl"></div>
       </div>
     );
   }
 
   if (!cleanCv) {
     return (
-      <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-12 text-center space-y-3">
-        <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-2xs">
           <FileText className="h-6 w-6" />
         </div>
-        <h3 className="font-semibold text-slate-800 text-sm">Belum Ada Draf CV Bersih</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">
+        <h3 className="font-semibold text-slate-900 text-sm">Belum Ada Draf CV Bersih</h3>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
           CV terstruktur 1 kolom standar Harvard/ATS akan dibuat secara otomatis begitu task penulisan ulang selesai.
         </p>
       </div>
@@ -133,7 +133,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
                       onPlaceholderChange(specificKey || p.text, newVal, p.text);
                     }
                   }}
-                  className="font-bold text-slate-900 bg-emerald-100/70 hover:bg-emerald-200 border border-emerald-300 px-1.5 py-0.5 rounded cursor-pointer transition"
+                  className="font-bold text-slate-900 bg-emerald-100/80 hover:bg-emerald-200 border border-emerald-300 px-1.5 py-0.5 rounded cursor-pointer transition shadow-2xs"
                 >
                   {filledVal}
                 </span>
@@ -148,7 +148,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
                   }}
                   placeholder={hint}
                   title={`Ketik langsung data riil untuk: ${p.text}`}
-                  className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-1.5 py-0.5 rounded text-xs outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white"
+                  className="bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 px-1.5 py-0.5 rounded text-xs outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white"
                   style={{
                     width: `${Math.max(filledVal.length, hint.length, 3) + 2}ch`,
                     minWidth: "60px",
@@ -157,7 +157,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
               )}
             </span>
 
-            {/* Print View: 100% Clean plain text (no borders, no backgrounds) */}
+            {/* Print View: 100% Clean plain text (no borders, no backgrounds, strict print safe) */}
             <span className="hidden print:inline font-normal text-black">
               {isFilled ? filledVal : p.text}
             </span>
@@ -176,10 +176,10 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Action & Warning Bar */}
-      <div className="no-print bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="no-print bg-white/80 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-white/90 shadow-[0_8px_30px_rgb(15,23,42,0.04)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all">
+        <div className="flex items-center gap-3.5">
           <span
-            className={`p-2 rounded-xl ${
+            className={`p-2.5 rounded-2xl shadow-2xs ${
               unfilledCount === 0 && totalPlaceholders > 0
                 ? "bg-emerald-100 text-emerald-800"
                 : "bg-amber-100 text-amber-800"
@@ -192,18 +192,18 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
             )}
           </span>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase">
+            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               {unfilledCount === 0 && totalPlaceholders > 0
                 ? "Dokumen CV Siap Dicetak"
                 : "Peringatan Sebelum Mencetak"}
             </h4>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
               {unfilledCount > 0 ? (
                 <>
-                  Tersisa <strong className="text-amber-700">{unfilledCount} placeholder</strong>. Angka yang kamu isi di tab Penulisan Ulang otomatis masuk ke sini, atau kamu bisa mengisinya langsung pada kotak kuning di bawah.
+                  Tersisa <strong className="text-amber-800 font-semibold">{unfilledCount} placeholder</strong>. Data yang kamu ketik di tab Penulisan Ulang otomatis masuk ke sini, atau kamu bisa melengkapinya langsung pada kotak kuning di bawah.
                 </>
               ) : (
-                "Seluruh bagian sudah lengkap dengan data riil dan siap dicetak atau disimpan ke PDF."
+                "Seluruh bagian sudah lengkap dengan data riil dan siap dicetak atau disimpan ke file PDF."
               )}
             </p>
           </div>
@@ -212,17 +212,17 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0"
         >
           <Printer className="h-4 w-4" />
           Cetak / Simpan PDF
         </button>
       </div>
 
-      {/* Dokumen CV 1 Kolom Format Harvard/ATS */}
+      {/* Dokumen CV 1 Kolom Format Harvard/ATS (STRICT PRINT SAFETY) */}
       <div
         id="print-area"
-        className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0"
+        className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-12 shadow-[0_8px_30px_rgb(15,23,42,0.04)] font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none print:bg-white"
       >
         {/* Header Nama & Kontak */}
         <div className="text-center border-b border-slate-300 pb-5 space-y-1.5 print:border-black">

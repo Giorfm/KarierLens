@@ -65,8 +65,8 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 1. Error state
   if (error) {
     return (
-      <div className="bg-white rounded-2xl border border-rose-200 p-8 text-center space-y-4 shadow-xs">
-        <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+        <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-2xs">
           <AlertCircle className="h-6 w-6" />
         </div>
         <div className="max-w-md mx-auto space-y-1">
@@ -77,7 +77,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-semibold shadow-xs transition cursor-pointer"
           >
             <RotateCcw className="h-4 w-4" />
             Coba Lagi
@@ -85,7 +85,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
           <button
             type="button"
             onClick={onActivateSimulation}
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold transition cursor-pointer"
           >
             Tampilkan Hasil Simulasi
           </button>
@@ -97,14 +97,14 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 2. Loading Skeleton state
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-6 animate-pulse">
-        <div className="h-10 w-64 bg-slate-100 rounded-lg"></div>
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 p-8 space-y-6 animate-pulse shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+        <div className="h-12 w-80 bg-slate-100 rounded-2xl"></div>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border border-slate-200 rounded-xl p-5 space-y-4">
-            <div className="h-6 w-48 bg-slate-100 rounded"></div>
+          <div key={i} className="border border-slate-200/80 rounded-2xl p-5 space-y-4">
+            <div className="h-6 w-48 bg-slate-100 rounded-md"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="h-24 bg-slate-100 rounded-lg"></div>
-              <div className="h-24 bg-slate-100 rounded-lg"></div>
+              <div className="h-28 bg-slate-100 rounded-xl"></div>
+              <div className="h-28 bg-slate-100 rounded-xl"></div>
             </div>
           </div>
         ))}
@@ -115,13 +115,13 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   // 3. Empty state
   if (!rewriteData || !rewriteData.rewrites || rewriteData.rewrites.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-12 text-center space-y-3">
-        <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3 shadow-[0_8px_30px_rgb(15,23,42,0.04)]">
+        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-2xs">
           <FileEdit className="h-6 w-6" />
         </div>
-        <h3 className="font-semibold text-slate-800 text-sm">Belum Ada Rekomendasi Revisi</h3>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">
-          Klik tombol &quot;Audit CV & Terjemahkan Pengalaman&quot; untuk mengubah pengalaman organisasi dan proyek kuliahmu menjadi poin pencapaian profesional.
+        <h3 className="font-semibold text-slate-900 text-sm">Belum Ada Rekomendasi Revisi</h3>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+          Klik tombol &quot;Audit CV & Terjemahkan Pengalaman&quot; untuk mengubah aktivitas kampus dan proyek kuliahmu menjadi pencapaian profesional terukur.
         </p>
       </div>
     );
@@ -139,18 +139,18 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-white/90 shadow-[0_8px_30px_rgb(15,23,42,0.04)] p-6 md:p-8 space-y-6 transition-all">
       {/* Banner Rekap & Interaktif Placeholder */}
       <div
-        className={`border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
+        className={`border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors shadow-2xs ${
           totalUnfilled === 0 && totalPlaceholders > 0
             ? "bg-emerald-50/90 border-emerald-200"
-            : "bg-amber-50/90 border-amber-200"
+            : "bg-amber-50/90 border-amber-200/90"
         }`}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3.5">
           <span
-            className={`p-2 rounded-xl ${
+            className={`p-2.5 rounded-2xl shrink-0 shadow-2xs ${
               totalUnfilled === 0 && totalPlaceholders > 0
                 ? "bg-emerald-100 text-emerald-800"
                 : "bg-amber-100 text-amber-800"
@@ -165,7 +165,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h4
-                className={`text-xs font-bold uppercase tracking-wide ${
+                className={`text-xs font-bold uppercase tracking-wider ${
                   totalUnfilled === 0 && totalPlaceholders > 0
                     ? "text-emerald-900"
                     : "text-amber-900"
@@ -173,12 +173,12 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
               >
                 Prinsip Anti-Halusinasi & Input Langsung
               </h4>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-white/80 px-2 py-0.5 rounded-full border border-slate-200 text-indigo-700">
-                <Edit3 className="h-3 w-3" /> Bisa Diisi Langsung
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-white/90 px-2.5 py-0.5 rounded-full border border-slate-200 text-blue-700 shadow-2xs">
+                <Edit3 className="h-3 w-3" /> Bisa Diedit
               </span>
             </div>
             <p
-              className={`text-xs sm:text-sm mt-0.5 ${
+              className={`text-xs sm:text-sm mt-1 leading-relaxed ${
                 totalUnfilled === 0 && totalPlaceholders > 0
                   ? "text-emerald-800"
                   : "text-amber-800"
@@ -186,15 +186,15 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
             >
               {totalUnfilled === 0 && totalPlaceholders > 0 ? (
                 <>
-                  Semua <strong className="font-bold">{totalPlaceholders} placeholder</strong> telah terisi data riil! Angka otomatis tersinkronisasi ke tab Cetak CV.
+                  Luar biasa! Semua <strong className="font-bold">{totalPlaceholders} placeholder</strong> telah terisi data riil. Nilai otomatis tersinkronisasi ke tab Cetak CV!
                 </>
               ) : (
                 <>
                   Tersisa{" "}
-                  <strong className="underline decoration-amber-400 underline-offset-2">
+                  <strong className="underline decoration-amber-400 underline-offset-2 font-bold">
                     {totalUnfilled} placeholder [isi ...]
                   </strong>
-                  . Kamu dapat <strong>mengetik langsung angka/data riil</strong> pada kotak kuning di bawah, dan nilainya otomatis berubah di CV Cetak!
+                  . Kamu dapat <strong className="font-semibold">mengetik langsung angka/fakta riil</strong> pada kotak kuning di bawah, dan nilainya otomatis berubah di CV Cetak.
                 </>
               )}
             </p>
@@ -211,24 +211,24 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
           return (
             <div
               key={item.id || idx}
-              className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:border-slate-300 transition overflow-hidden"
+              className="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all overflow-hidden"
             >
               {/* Header Kartu */}
-              <div className="bg-slate-50/80 px-5 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white border border-slate-200 text-indigo-700 shadow-2xs">
+              <div className="bg-slate-50/80 px-5 py-3.5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-white border border-slate-200 text-blue-700 shadow-2xs">
                     {item.category}
                   </span>
-                  <span className="text-xs font-semibold text-slate-700">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-800">
                     {item.roleContext}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy(item.id, resolvedSentence)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border transition cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer shadow-2xs ${
                     copiedId === item.id
-                      ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                      ? "bg-emerald-600 text-white border-emerald-600"
                       : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                   }`}
                   title="Salin kalimat lengkap dengan data yang sudah kamu isi"
@@ -248,10 +248,10 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
               </div>
 
               {/* Komparasi Sebelum & Sesudah */}
-              <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Sebelum */}
-                <div className="bg-rose-50/40 border border-rose-100 rounded-xl p-4 flex flex-col justify-between relative">
-                  <div className="space-y-1.5">
+                <div className="bg-rose-50/40 border border-rose-100/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative space-y-2">
+                  <div className="space-y-2">
                     <span className="text-[11px] font-bold text-rose-700 uppercase tracking-wider block">
                       Kalimat Asli di CV (Pasif / Kurang Terukur)
                     </span>
@@ -265,11 +265,11 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                 </div>
 
                 {/* Sesudah dengan Interactive Inline Inputs */}
-                <div className="bg-indigo-50/40 border border-indigo-100 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                <div className="bg-blue-50/30 border border-blue-100/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-3.5">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1">
-                        <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
+                      <span className="text-[11px] font-bold text-blue-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-blue-600" />
                         Rekomendasi Revisi (Bisa Diedit Langsung)
                       </span>
                     </div>
@@ -300,10 +300,10 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                                 }}
                                 placeholder={hintText}
                                 title={`Ketik data riil untuk: ${p.text}`}
-                                className={`px-2 py-0.5 rounded text-xs transition-all outline-none font-sans ${
+                                className={`px-2 py-0.5 rounded-lg text-xs transition-all outline-none font-sans ${
                                   isFilled
                                     ? "bg-emerald-100 text-emerald-950 font-bold border border-emerald-400 shadow-2xs focus:ring-2 focus:ring-emerald-400 focus:bg-white"
-                                    : "bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 placeholder:text-amber-800/60 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200"
+                                    : "bg-amber-100 text-amber-950 font-semibold border-2 border-dashed border-amber-400 placeholder:text-amber-800/60 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200"
                                 }`}
                                 style={{
                                   width: `${Math.max(currentVal.length, hintText.length, 3) + 2.5}ch`,
@@ -319,7 +319,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                   </div>
 
                   {/* Kata Kunci yang Ditambahkan & Alasan */}
-                  <div className="pt-2 border-t border-indigo-100/70 space-y-1.5">
+                  <div className="pt-2.5 border-t border-blue-100/70 space-y-1.5">
                     {item.keywordsAdded && item.keywordsAdded.length > 0 && (
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-[10px] font-semibold text-slate-500 uppercase flex items-center gap-1">
@@ -329,7 +329,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                         {item.keywordsAdded.map((kw, kwIdx) => (
                           <span
                             key={kwIdx}
-                            className="text-[11px] font-medium bg-indigo-100/80 text-indigo-800 px-2 py-0.5 rounded"
+                            className="text-[11px] font-medium bg-blue-100/70 text-blue-800 px-2.5 py-0.5 rounded-full"
                           >
                             {kw}
                           </span>
@@ -337,7 +337,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                       </div>
                     )}
                     <p className="text-[11px] text-slate-600 leading-normal">
-                      <strong className="text-slate-800">Kenapa lebih baik:</strong> {item.improvementReason}
+                      <strong className="text-slate-800 font-semibold">Alasan perbaikan:</strong> {item.improvementReason}
                     </p>
                   </div>
                 </div>

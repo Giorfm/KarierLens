@@ -8,6 +8,9 @@ import {
   Printer,
   Copy,
   Check,
+  ShieldCheck,
+  Sparkles,
+  FileCheck,
 } from "lucide-react";
 import type {
   TaskName,
@@ -272,7 +275,7 @@ export default function Home() {
     []
   );
 
-  // 10. PDF parser handler (Tahap 6)
+  // 11. PDF parser handler (Tahap 6)
   const handlePdfUpload = async (file: File) => {
     setPdfParsing(true);
     try {
@@ -287,7 +290,7 @@ export default function Home() {
     }
   };
 
-  // 11. Copy JSON result helper (Should Have)
+  // 12. Copy JSON result helper (Should Have)
   const handleCopyJson = () => {
     if (!result) return;
     const jsonStr = JSON.stringify(result, null, 2);
@@ -300,8 +303,15 @@ export default function Home() {
   const isAnalysisLoading = Object.values(taskStatus).some((s) => s === "loading");
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-indigo-100 selection:text-indigo-900">
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-[#FAFAFC] text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900 relative overflow-x-hidden">
+      {/* Ambient Mesh Glow Orbs (Pure CSS, Daylight AI Aesthetic) */}
+      <div className="absolute top-0 left-0 right-0 h-96 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -top-24 left-1/4 w-96 h-96 bg-sky-200/35 rounded-full blur-3xl" />
+        <div className="absolute -top-32 right-1/4 w-[28rem] h-[28rem] bg-indigo-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-48 left-1/2 -translate-x-1/2 w-80 h-80 bg-amber-100/30 rounded-full blur-3xl" />
+      </div>
+
+      {/* Header Bar */}
       <Header
         onSelectPreset={handleSelectPreset}
         onReset={handleReset}
@@ -309,7 +319,39 @@ export default function Home() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-10">
+        {/* Compact Hero Banner */}
+        <section className="no-print text-center pt-2 pb-2 space-y-3 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/80 border border-blue-200/60 text-blue-700 text-xs font-semibold shadow-2xs">
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+            <span>Campus-to-Corporate AI Career Translator</span>
+          </div>
+
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900">
+            Ubah Pengalaman Kampus Jadi Bahasa Rekruter.
+          </h1>
+
+          <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+            Audit kecocokan CV terhadap Job Description, terjemahkan aktivitas BEM/kepanitiaan tanpa mengarang angka, dan siapkan jawaban wawancara STAR.
+          </p>
+
+          {/* Trust Badges */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-600">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 border border-slate-200/80 shadow-2xs font-medium">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+              100% Client-side Privacy
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 border border-slate-200/80 shadow-2xs font-medium">
+              <Check className="h-3.5 w-3.5 text-blue-600" />
+              Prinsip Anti-Halusinasi
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 border border-slate-200/80 shadow-2xs font-medium">
+              <FileCheck className="h-3.5 w-3.5 text-indigo-600" />
+              Format Standar Harvard/ATS
+            </span>
+          </div>
+        </section>
+
         {/* Status & Simulation Banners */}
         <StatusBanner
           isSimulation={mode === "simulation"}
@@ -317,7 +359,7 @@ export default function Home() {
           onActivateSimulation={handleActivateSimulation}
         />
 
-        {/* Input Form Panel */}
+        {/* Input Form Panel (Frosted Glass Dual Card) */}
         <InputPanel
           cvText={cvText}
           setCvText={(val) => {
@@ -342,80 +384,85 @@ export default function Home() {
         {/* Task Progress Chips */}
         <TaskProgress taskStatus={taskStatus} onRetryTask={handleRetryTask} />
 
-        {/* Tab Navigasi Panel Hasil */}
-        <div className="no-print border-b border-slate-200">
-          <nav className="flex space-x-2 sm:space-x-6 overflow-x-auto" aria-label="Tabs">
-            <button
-              type="button"
-              onClick={() => setActiveTab("score")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
-                activeTab === "score"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
-              }`}
+        {/* Tab Navigasi Panel Hasil (Segmented Pill Bar) */}
+        <div className="no-print pt-2">
+          <div className="flex justify-center sm:justify-start">
+            <nav
+              className="bg-slate-200/60 p-1.5 rounded-2xl sm:rounded-full border border-slate-200/80 inline-flex items-center gap-1 max-w-full overflow-x-auto shadow-inner/10"
+              aria-label="Tabs"
             >
-              <Target className="h-4 w-4" />
-              <span>Skor Kecocokan CV</span>
-              {computedScores.initial > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
-                  {computedScores.initial}%
-                </span>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("score")}
+                className={`py-2 px-4 sm:px-5 font-semibold text-xs sm:text-sm flex items-center gap-2 rounded-full whitespace-nowrap transition cursor-pointer ${
+                  activeTab === "score"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                }`}
+              >
+                <Target className="h-4 w-4" />
+                <span>Skor Kecocokan CV</span>
+                {computedScores.initial > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+                    {computedScores.initial}%
+                  </span>
+                )}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("rewrite")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
-                activeTab === "rewrite"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
-              }`}
-            >
-              <FileEdit className="h-4 w-4" />
-              <span>Penulisan Ulang Pengalaman</span>
-              {result.rewrite?.rewrites && result.rewrite.rewrites.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
-                  {result.rewrite.rewrites.length}
-                </span>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("rewrite")}
+                className={`py-2 px-4 sm:px-5 font-semibold text-xs sm:text-sm flex items-center gap-2 rounded-full whitespace-nowrap transition cursor-pointer ${
+                  activeTab === "rewrite"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                }`}
+              >
+                <FileEdit className="h-4 w-4" />
+                <span>Penulisan Ulang Pengalaman</span>
+                {result.rewrite?.rewrites && result.rewrite.rewrites.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+                    {result.rewrite.rewrites.length}
+                  </span>
+                )}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("interview")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
-                activeTab === "interview"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
-              }`}
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span>Simulasi Wawancara STAR</span>
-              {result.interview?.interviewQuestions && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
-                  {result.interview.interviewQuestions.length}
-                </span>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("interview")}
+                className={`py-2 px-4 sm:px-5 font-semibold text-xs sm:text-sm flex items-center gap-2 rounded-full whitespace-nowrap transition cursor-pointer ${
+                  activeTab === "interview"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                }`}
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>Simulasi Wawancara STAR</span>
+                {result.interview?.interviewQuestions && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+                    {result.interview.interviewQuestions.length}
+                  </span>
+                )}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("print")}
-              className={`py-3 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition cursor-pointer ${
-                activeTab === "print"
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
-              }`}
-            >
-              <Printer className="h-4 w-4" />
-              <span>Cetak CV 1 Kolom</span>
-            </button>
-          </nav>
+              <button
+                type="button"
+                onClick={() => setActiveTab("print")}
+                className={`py-2 px-4 sm:px-5 font-semibold text-xs sm:text-sm flex items-center gap-2 rounded-full whitespace-nowrap transition cursor-pointer ${
+                  activeTab === "print"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                }`}
+              >
+                <Printer className="h-4 w-4" />
+                <span>Cetak CV 1 Kolom</span>
+              </button>
+            </nav>
+          </div>
         </div>
 
         {/* Panel Konten Tab */}
-        <div className="mt-4">
+        <div className="mt-2">
           {activeTab === "score" && (
             <AtsScoreTab
               scoreData={result.score}
@@ -468,11 +515,11 @@ export default function Home() {
 
         {/* Should Have: Tombol Salin JSON Hasil di Development */}
         {process.env.NODE_ENV !== "production" && result && Object.keys(result).length > 0 && (
-          <div className="no-print pt-6 border-t border-slate-200 flex justify-end">
+          <div className="no-print pt-4 border-t border-slate-200/80 flex justify-end">
             <button
               type="button"
               onClick={handleCopyJson}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs text-slate-600 hover:bg-slate-50 transition shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-slate-300 bg-white text-xs text-slate-600 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
             >
               {copiedJson ? (
                 <>
@@ -491,23 +538,23 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="no-print border-t border-slate-200 bg-white mt-12 py-6 text-xs text-slate-500">
+      <footer className="no-print border-t border-slate-200/80 bg-white/70 backdrop-blur-md mt-16 py-8 text-xs text-slate-500 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Tersimpan di browser pengguna</span>
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs"></span>
+            <span className="font-medium text-slate-700">Tersimpan di browser pengguna (Stateless & Safe)</span>
             <span className="text-slate-300">|</span>
             <button
               type="button"
               onClick={handleActivateSimulation}
-              className="text-indigo-600 hover:underline font-medium cursor-pointer"
+              className="text-blue-600 hover:underline font-semibold cursor-pointer"
             >
               Aktifkan Mode Simulasi
             </button>
           </div>
 
           <p className="text-center sm:text-right max-w-xl text-[11px] text-slate-400">
-            Data pribadi disamarkan di browser sebelum dikirim ke penyedia model AI; aplikasi ini tidak menyimpan CV di server.
+            Data pribadi disamarkan di browser sebelum dikirim ke penyedia model AI; aplikasi ini tidak menyimpan CV di database/server.
           </p>
         </div>
       </footer>
