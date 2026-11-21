@@ -1,16 +1,19 @@
 "use client";
 
-import React from "react";
-import { Printer, AlertTriangle, FileText, CheckCircle2 } from "lucide-react";
-import type { CleanCvSection } from "@/types/karierlens";
+import React, { useMemo } from "react";
+import { Printer, AlertTriangle, FileText, CheckCircle2, Info } from "lucide-react";
+import type { CleanCvSection, Lang } from "@/types/karierlens";
 import {
   countPlaceholders,
   countUnfilledPlaceholders,
   splitPlaceholders,
 } from "@/lib/placeholders";
+import { detectTitleInflation } from "@/lib/title-guard";
 
 interface PrintCvTabProps {
   cleanCv?: CleanCvSection;
+  language?: Lang;
+  cvText?: string;
   contacts: {
     emails: string[];
     phones: string[];
@@ -26,6 +29,8 @@ interface PrintCvTabProps {
 
 export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   cleanCv,
+  language = "id",
+  cvText = "",
   contacts,
   isLoading,
   error,
@@ -34,6 +39,19 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
   placeholderValues = {},
   onPlaceholderChange,
 }) => {
+  const isEn = language === "en";
+
+  // Title inflation check on cleanCv (Section 3.5.1)
+  const unjustifiedTitles = useMemo(() => {
+    if (!cleanCv) return [];
+    const allCleanTitles = [
+      cleanCv.headline,
+      cleanCv.summary,
+      ...(cleanCv.experiences || []).map((e) => e.title),
+    ].join(" ");
+    return detectTitleInflation(cvText, allCleanTitles);
+  }, [cleanCv, cvText]);
+
   if (error) {
     return (
       <div className="bg-white rounded-2xl border border-rose-200 p-8 text-center space-y-4 shadow-xs">
@@ -118,7 +136,7 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
           placeholderValues[p.text] ||
           "";
         const isFilled = filledVal.trim().length > 0;
-        const hint = p.hint || "isi";
+        const hint = p.hint || (isEn ? "fill" : "isi");
 
         return (
           <span key={idx} className="inline-block">
@@ -175,6 +193,31 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Banner Non-Cetak Mode Inggris (Spesifikasi 3.6) */}
+      {isEn && (
+        <div className="no-print bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-start gap-3 text-xs text-indigo-900">
+          <Info className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-bold uppercase tracking-wider text-indigo-950">
+              Dokumen CV Bahasa Inggris
+            </h4>
+            <p className="mt-0.5 leading-relaxed">
+              Terjemahan dibantu AI dan glosarium. Periksa kembali, dan pastikan kamu bisa menjelaskan setiap kalimat dalam bahasa Inggris saat wawancara.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Peringatan Penjaga Kenaikan Jabatan jika terdeteksi (3.5.1) */}
+      {unjustifiedTitles.length > 0 && (
+        <div className="no-print bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 text-xs text-amber-900">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
+          <span>
+            <strong>Peringatan Kenaikan Jabatan:</strong> Kata <strong>&quot;{unjustifiedTitles.join(", ")}&quot;</strong> tidak ada di CV aslimu. Periksa agar tidak terkesan menaikkan jabatan.
+          </span>
+        </div>
+      )}
+
       {/* Action & Warning Bar */}
       <div className="no-print bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -219,9 +262,10 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
         </button>
       </div>
 
-      {/* Dokumen CV 1 Kolom Format Harvard/ATS */}
+      {/* Dokumen CV 1 Kolom Format Harvard/ATS dengan atribut lang */}
       <div
         id="print-area"
+        lang={language || "id"}
         className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm font-sans text-slate-900 text-sm max-w-4xl mx-auto space-y-6 print:border-none print:shadow-none print:p-0"
       >
         {/* Header Nama & Kontak */}
@@ -247,11 +291,11 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
           </div>
         </div>
 
-        {/* Ringkasan Profil */}
+        {/* Ringkasan Profil / Summary */}
         {cleanCv.summary && (
           <div className="space-y-1">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Ringkasan Profesional
+              {isEn ? "Summary" : "Ringkasan Profesional"}
             </h2>
             <p className="text-xs sm:text-sm leading-relaxed text-slate-800 pt-1 print:text-black">
               {renderWithPlaceholders(cleanCv.summary, "summary")}
@@ -259,11 +303,11 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
           </div>
         )}
 
-        {/* Pendidikan */}
+        {/* Pendidikan / Education */}
         {cleanCv.education && (
           <div className="space-y-1">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Pendidikan
+              {isEn ? "Education" : "Pendidikan"}
             </h2>
             <p className="text-xs sm:text-sm text-slate-800 pt-1 font-medium print:text-black">
               {renderWithPlaceholders(cleanCv.education, "education")}
@@ -271,11 +315,11 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
           </div>
         )}
 
-        {/* Pengalaman */}
+        {/* Pengalaman / Experience */}
         {cleanCv.experiences && cleanCv.experiences.length > 0 && (
           <div className="space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Pengalaman Organisasi & Proyek
+              {isEn ? "Experience" : "Pengalaman Organisasi & Proyek"}
             </h2>
             <div className="space-y-4 pt-1">
               {cleanCv.experiences.map((exp, expIdx) => (
@@ -304,11 +348,11 @@ export const PrintCvTab: React.FC<PrintCvTabProps> = ({
           </div>
         )}
 
-        {/* Keahlian & Keterampilan */}
+        {/* Keahlian & Keterampilan / Skills */}
         {cleanCv.skills && cleanCv.skills.length > 0 && (
           <div className="space-y-1.5">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 print:border-black print:text-black">
-              Keahlian & Kompetensi
+              {isEn ? "Skills" : "Keahlian & Kompetensi"}
             </h2>
             <p className="text-xs sm:text-sm text-slate-800 pt-1 leading-relaxed print:text-black">
               {cleanCv.skills.map((sk, idx) => (

@@ -6,13 +6,16 @@ import {
   Briefcase,
   ShieldCheck,
   Upload,
-  Globe,
   Eye,
   Sparkles,
   Loader2,
+  Info,
+  ArrowRight,
+  AlertTriangle,
 } from "lucide-react";
 import type { Lang } from "@/types/karierlens";
 import { maskPii } from "@/lib/pii";
+import { detectLanguage } from "@/lib/language";
 
 interface InputPanelProps {
   cvText: string;
@@ -48,6 +51,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({
     return maskPii(cvText);
   }, [cvText]);
 
+  // Language detection on Job Description
+  const jdDetectedLang = useMemo(() => {
+    return detectLanguage(jobDescription);
+  }, [jobDescription]);
+
   const totalMasked = Object.values(piiData.counts).reduce((a, b) => a + b, 0);
 
   const cvLength = cvText.length;
@@ -74,6 +82,100 @@ export const InputPanel: React.FC<InputPanelProps> = ({
 
   return (
     <div className="no-print bg-white rounded-2xl border border-slate-200 shadow-xs p-5 md:p-6 space-y-6">
+      {/* Pilihan Bahasa Hasil CV: Segmented Control Dua Kartu (Spesifikasi 3.2) */}
+      <div className="space-y-3">
+        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+          Pilihan Format Dokumen Hasil CV
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Kartu 1: CV Bahasa Indonesia */}
+          <button
+            type="button"
+            onClick={() => setLanguage("id")}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative ${
+              language === "id"
+                ? "bg-indigo-50/70 border-indigo-500 ring-2 ring-indigo-200 shadow-xs"
+                : "bg-slate-50/60 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-slate-900">CV Bahasa Indonesia</span>
+              {language === "id" && (
+                <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Hasil CV, poin revisi, dan simulasi wawancara dalam Bahasa Indonesia profesional.
+            </p>
+          </button>
+
+          {/* Kartu 2: CV Bahasa Inggris (Niche Feature) */}
+          <button
+            type="button"
+            onClick={() => setLanguage("en")}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative ${
+              language === "en"
+                ? "bg-indigo-50/70 border-indigo-500 ring-2 ring-indigo-200 shadow-xs"
+                : "bg-slate-50/60 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-sm text-slate-900">CV Bahasa Inggris</span>
+                <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300 shadow-2xs">
+                  Khas KarierLens
+                </span>
+              </div>
+              {language === "en" && (
+                <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+              )}
+            </div>
+            <p className="text-xs text-slate-600 mt-1">
+              <em>Tulis dalam Bahasa Indonesia, hasil dalam Bahasa Inggris</em> — dibantu glosarium kampus tanpa menaikkan jabatan.
+            </p>
+          </button>
+        </div>
+
+        {/* Saran Otomatis Berdasarkan Deteksi Bahasa JD */}
+        {jdDetectedLang === "en" && language === "id" && (
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-indigo-900">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-indigo-600 shrink-0" />
+              <span>
+                <strong>Saran:</strong> JD terdeteksi berbahasa Inggris. Mau hasil CV dalam Bahasa Inggris?
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-2xs transition cursor-pointer shrink-0"
+            >
+              <span>Pakai mode Inggris</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
+
+        {language === "en" && jdDetectedLang === "id" && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5 text-xs text-amber-900">
+            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+            <p>
+              <strong>Catatan:</strong> JD berbahasa Indonesia, sedangkan CV hasil berbahasa Inggris. Pencocokan kata kunci tetap berjalan dua arah, tetapi pastikan perusahaan target memang menerima CV Inggris.
+            </p>
+          </div>
+        )}
+
+        {/* Kartu Tips Statis untuk Mode Inggris */}
+        {language === "en" && (
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-start gap-2.5 text-xs text-slate-600">
+            <Info className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+            <p>
+              <strong>Tips CV Global:</strong> CV untuk perusahaan multinasional / regional umumnya tidak mencantumkan foto, agama, status pernikahan, atau tanggal lahir. Periksa persyaratan tiap lowongan.
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Kolom Kiri: Input CV */}
         <div className="space-y-3">
@@ -132,13 +234,14 @@ export const InputPanel: React.FC<InputPanelProps> = ({
               rows={9}
               value={cvText}
               onChange={(e) => setCvText(e.target.value)}
-              placeholder="Tempel draf CV kamu di sini. Jangan khawatir jika bahasanya masih pasif atau berupa poin organisasi kampus biasa...
+              placeholder="Tempel draf CV kamu di sini dalam Bahasa Indonesia. Tulis pengalaman organisasi (BEM/HIMA), kepanitiaan, asisten lab, atau proyek kuliahmu apa adanya...
 
 Contoh:
 Raka Pratama - raka@example.com - 081234567890
 - Koordinator Divisi Acara Seminar Teknologi HIMA SI (bertugas membuat rundown dan kontak pembicara)
-- Proyek Tugas Akhir: Bikin sistem perpustakaan pakai React dan MySQL
-- Anggota UKM Kewirausahaan membantu jualan bazar kampus..."
+- Koordinator Danus Bazar: mengumpulkan dana Rp12.500.000 melalui sponsor dan penjualan merchandise
+- Proyek Tugas Besar: Bikin sistem inventaris pakai React dan MySQL
+- Asisten Praktikum Basis Data: membimbing 45 mahasiswa..."
               className="w-full rounded-xl border border-slate-200 bg-slate-50/40 p-3.5 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition resize-y font-sans"
             />
           </div>
@@ -175,51 +278,19 @@ Raka Pratama - raka@example.com - 081234567890
             </div>
           </div>
 
-          {/* Opsi Bahasa */}
-          <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
-            <span className="text-slate-600 font-medium flex items-center gap-1.5">
-              <Globe className="h-3.5 w-3.5 text-slate-500" />
-              Bahasa Output Rekomendasi:
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setLanguage("id")}
-                className={`px-2.5 py-1 rounded-md font-medium transition ${
-                  language === "id"
-                    ? "bg-white text-indigo-600 shadow-xs border border-slate-200"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-              >
-                Bahasa Indonesia
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage("en")}
-                className={`px-2.5 py-1 rounded-md font-medium transition ${
-                  language === "en"
-                    ? "bg-white text-indigo-600 shadow-xs border border-slate-200"
-                    : "text-slate-500 hover:text-slate-900"
-                }`}
-              >
-                English
-              </button>
-            </div>
-          </div>
-
           <div className="relative">
             <textarea
               rows={9}
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Tempel rincian lowongan kerja, kualifikasi magang (MSIB/mandiri), atau Job Description target di sini...
+              placeholder="Tempel rincian lowongan kerja, kualifikasi magang (MSIB/mandiri), atau Job Description target di sini... (Bahasa Indonesia atau Bahasa Inggris)
 
 Contoh:
-Product Management Intern - Cakrawala Fintech
-Tanggung Jawab:
-- Melakukan user research dan merumuskan Product Requirement Document (PRD)
-- Berkolaborasi lintas divisi (cross-functional) dengan tim engineering dan UI/UX
-- Mengikuti ritme kerja Agile/Scrum dan menganalisis KPI produk..."
+Product Operations Intern - Southeast Asia Tech
+Responsibilities:
+- Conduct user research and assist in operational workflow mapping
+- Coordinate cross-functional requirements with engineering and design
+- Track project milestones and resolve process bottlenecks..."
               className="w-full rounded-xl border border-slate-200 bg-slate-50/40 p-3.5 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition resize-y font-sans"
             />
           </div>

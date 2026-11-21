@@ -230,6 +230,11 @@ export default function Home() {
     setSelectedPresetId(found.id);
     setCvText(found.cvText);
     setJobDescription(found.jobDescription);
+    if (found.defaultLanguage) {
+      setLanguage(found.defaultLanguage);
+    } else {
+      setLanguage("id");
+    }
     setMode("simulation");
     setGlobalError(null);
     setResult(found.fallbackResult);
@@ -431,6 +436,8 @@ export default function Home() {
           {activeTab === "rewrite" && (
             <RewriterTab
               rewriteData={result.rewrite}
+              language={language}
+              cvText={cvText}
               isLoading={taskStatus.rewrite === "loading"}
               error={taskErrors.rewrite}
               onRetry={() => handleRetryTask("rewrite")}
@@ -455,6 +462,8 @@ export default function Home() {
           {activeTab === "print" && (
             <PrintCvTab
               cleanCv={result.rewrite?.cleanCv}
+              language={language}
+              cvText={cvText}
               contacts={contacts}
               isLoading={taskStatus.rewrite === "loading"}
               error={taskErrors.rewrite}

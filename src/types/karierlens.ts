@@ -104,6 +104,7 @@ export interface PresetProfile {
   description: string;
   cvText: string;             // berisi data pribadi FIKTIF (email/telepon contoh) agar masking bisa didemokan
   jobDescription: string;
+  defaultLanguage?: Lang;
   fallbackResult: AnalysisResult;
 }
 export interface PersistedSession {

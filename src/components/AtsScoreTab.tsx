@@ -261,6 +261,11 @@ export const AtsScoreTab: React.FC<AtsScoreTabProps> = ({
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
                   >
                     <span>{kw}</span>
+                    {item?.keywordAlt && item.keywordAlt.toLowerCase() !== kw.toLowerCase() && (
+                      <span className="text-[10px] text-emerald-600 font-normal opacity-80">
+                        ({item.keywordAlt})
+                      </span>
+                    )}
                     {item && importanceBadge(item.importance)}
                   </span>
                 );
@@ -296,6 +301,11 @@ export const AtsScoreTab: React.FC<AtsScoreTabProps> = ({
                     }`}
                   >
                     <span>{kw}</span>
+                    {item?.keywordAlt && item.keywordAlt.toLowerCase() !== kw.toLowerCase() && (
+                      <span className="text-[10px] text-slate-500 font-normal">
+                        ({item.keywordAlt})
+                      </span>
+                    )}
                     {item && importanceBadge(item.importance)}
                     {isCovered && (
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">

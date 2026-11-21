@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Sparkles,
   ArrowRight,
@@ -13,17 +13,22 @@ import {
   AlertTriangle,
   CheckCircle2,
   Edit3,
+  BookOpen,
 } from "lucide-react";
-import type { RewriteResult } from "@/types/karierlens";
+import type { RewriteResult, Lang } from "@/types/karierlens";
 import {
   countPlaceholders,
   countUnfilledPlaceholders,
   splitPlaceholders,
   resolveTextPlaceholders,
 } from "@/lib/placeholders";
+import { detectGlossary, checkGlossaryCompliance } from "@/lib/glossary";
+import { detectTitleInflation } from "@/lib/title-guard";
 
 interface RewriterTabProps {
   rewriteData?: RewriteResult;
+  language?: Lang;
+  cvText?: string;
   isLoading: boolean;
   error?: string | null;
   onRetry: () => void;
@@ -34,6 +39,8 @@ interface RewriterTabProps {
 
 export const RewriterTab: React.FC<RewriterTabProps> = ({
   rewriteData,
+  language = "id",
+  cvText = "",
   isLoading,
   error,
   onRetry,
@@ -61,6 +68,27 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
       setTimeout(() => setCopiedId(null), 2000);
     }
   };
+
+  // Glossary detection & compliance check (Section 3.5.2 & 3.6)
+  const glossaryHits = useMemo(() => {
+    return detectGlossary(cvText);
+  }, [cvText]);
+
+  const allOutputText = useMemo(() => {
+    if (!rewriteData) return "";
+    const afters = (rewriteData.rewrites || []).map((r) => r.after).join(" ");
+    const cleanHeadline = rewriteData.cleanCv?.headline || "";
+    const cleanSummary = rewriteData.cleanCv?.summary || "";
+    const skills = (rewriteData.cleanCv?.skills || []).join(" ");
+    const expBullets = (rewriteData.cleanCv?.experiences || [])
+      .flatMap((e) => e.bullets || [])
+      .join(" ");
+    return `${afters} ${cleanHeadline} ${cleanSummary} ${skills} ${expBullets}`;
+  }, [rewriteData]);
+
+  const complianceList = useMemo(() => {
+    return checkGlossaryCompliance(glossaryHits, allOutputText);
+  }, [glossaryHits, allOutputText]);
 
   // 1. Error state
   if (error) {
@@ -140,6 +168,58 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Panel Istilah Kampus Terdeteksi (Mode English - Spesifikasi 3.5.2 & 3.6) */}
+      {language === "en" && complianceList.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-indigo-600" />
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                Istilah Kampus Terdeteksi ({complianceList.length})
+              </h4>
+            </div>
+            <span className="text-[11px] text-slate-500">
+              Dipadankan dengan Glosarium Kampus Indonesia → Inggris
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 font-semibold bg-slate-50/70">
+                  <th className="py-2 px-3">Istilah di CV</th>
+                  <th className="py-2 px-3">Padanan Inggris</th>
+                  <th className="py-2 px-3">Status Kepatuhan</th>
+                  <th className="py-2 px-3">Catatan / Konteks</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {complianceList.map((c, i) => (
+                  <tr key={i} className="hover:bg-slate-50/50">
+                    <td className="py-2.5 px-3 font-semibold text-slate-900">{c.hit.matched}</td>
+                    <td className="py-2.5 px-3 font-medium text-indigo-700">{c.hit.entry.en}</td>
+                    <td className="py-2.5 px-3">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          c.status === "Dipakai"
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : "bg-slate-100 text-slate-600 border-slate-200"
+                        }`}
+                      >
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-500 italic">
+                      {c.hit.entry.note || "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Banner Rekap & Interaktif Placeholder */}
       <div
         className={`border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
@@ -192,7 +272,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                 <>
                   Tersisa{" "}
                   <strong className="underline decoration-amber-400 underline-offset-2">
-                    {totalUnfilled} placeholder [isi ...]
+                    {totalUnfilled} placeholder {language === "en" ? "[fill in ...]" : "[isi ...]"}
                   </strong>
                   . Kamu dapat <strong>mengetik langsung angka/data riil</strong> pada kotak kuning di bawah, dan nilainya otomatis berubah di CV Cetak!
                 </>
@@ -207,6 +287,12 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
         {rewriteData.rewrites.map((item, idx) => {
           const parts = splitPlaceholders(item.after);
           const resolvedSentence = resolveTextPlaceholders(item.after, placeholderValues, item.id);
+
+          // Penjaga Kenaikan Jabatan (Spesifikasi 3.5.1)
+          const unjustifiedTitles = detectTitleInflation(
+            cvText,
+            `${item.after} ${item.roleContext}`
+          );
 
           return (
             <div
@@ -247,9 +333,19 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                 </button>
               </div>
 
+              {/* Peringatan Penjaga Kenaikan Jabatan jika terdeteksi (3.5.1) */}
+              {unjustifiedTitles.length > 0 && (
+                <div className="bg-amber-50 border-b border-amber-200 px-5 py-2.5 text-xs text-amber-900 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span>
+                    Kata <strong>&quot;{unjustifiedTitles.join(", ")}&quot;</strong> tidak ada di CV aslimu. Periksa agar tidak terkesan menaikkan jabatan.
+                  </span>
+                </div>
+              )}
+
               {/* Komparasi Sebelum & Sesudah */}
               <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Sebelum */}
+                {/* Sebelum: Disalin apa adanya dari bahasa asli CV */}
                 <div className="bg-rose-50/40 border border-rose-100 rounded-xl p-4 flex flex-col justify-between relative">
                   <div className="space-y-1.5">
                     <span className="text-[11px] font-bold text-rose-700 uppercase tracking-wider block">
@@ -270,7 +366,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1">
                         <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-                        Rekomendasi Revisi (Bisa Diedit Langsung)
+                        Rekomendasi Revisi {language === "en" ? "(CV Inggris)" : "(Bisa Diedit Langsung)"}
                       </span>
                     </div>
 
@@ -283,7 +379,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                             placeholderValues[p.text] ??
                             "";
                           const isFilled = currentVal.trim().length > 0;
-                          const hintText = p.hint || "isi angka";
+                          const hintText = p.hint || (language === "en" ? "fill number" : "isi angka");
 
                           return (
                             <span
@@ -318,7 +414,7 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                     </div>
                   </div>
 
-                  {/* Kata Kunci yang Ditambahkan & Alasan */}
+                  {/* Kata Kunci yang Ditambahkan, Alasan, dan Catatan Terjemahan */}
                   <div className="pt-2 border-t border-indigo-100/70 space-y-1.5">
                     {item.keywordsAdded && item.keywordsAdded.length > 0 && (
                       <div className="flex flex-wrap items-center gap-1.5">
@@ -339,6 +435,12 @@ export const RewriterTab: React.FC<RewriterTabProps> = ({
                     <p className="text-[11px] text-slate-600 leading-normal">
                       <strong className="text-slate-800">Kenapa lebih baik:</strong> {item.improvementReason}
                     </p>
+
+                    {item.translationNote && (
+                      <p className="text-[11px] text-slate-600 leading-normal bg-indigo-50/50 p-2 rounded-lg border border-indigo-100/60">
+                        <strong className="text-indigo-900">Catatan terjemahan:</strong> {item.translationNote}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
